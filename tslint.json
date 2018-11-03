@@ -1,0 +1,5 @@
+{
+    "extends": [
+        "eslint-config-yylint/tslint.json"
+    ]
+}

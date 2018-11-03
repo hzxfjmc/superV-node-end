@@ -1,0 +1,72 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "umi dev",
+    "build": "umi build",
+    "test": "umi test",
+    "lint": "eslint --ext .js src mock tests",
+    "precommit": "lint-staged",
+    "node-build": "tsc -p tsconfig.build.json",
+    "node-start": "node bin/server/index.js",
+    "dev": "cross-env NODE_ENV=development && npm run node-build && npm run node-start",
+    "prod": "cross-env NODE_ENV=production && npm run node-start"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.46",
+    "@types/koa-compress": "^2.0.8",
+    "@types/koa-mount": "^3.0.1",
+    "@types/koa-router": "^7.0.30",
+    "@types/koa-static": "^4.0.0",
+    "@types/redis": "^2.8.6",
+    "@types/redlock": "^3.0.1",
+    "@types/sequelize": "^4.27.24",
+    "@types/ua-parser-js": "^0.7.32",
+    "chai": "^3.5.0",
+    "cheerio": "^0.22.0",
+    "cross-env": "^3.2.4",
+    "istanbul": "^0.4.5",
+    "koa-static": "^4.0.2",
+    "mocha": "^3.2.0",
+    "mocha-tslint": "^0.2.1",
+    "mochawesome": "^2.0.2",
+    "node-schedule": "^1.2.0",
+    "nodemailer": "^2.7.0",
+    "supertest": "^2.0.1",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "device": "0.3.8",
+    "joi": "10.4.1",
+    "koa": "^2.3.0",
+    "koa-body": "^4.0.4",
+    "koa-compress": "^2.0.0",
+    "koa-mount": "^3.0.0",
+    "koa-router": "^7.2.1",
+    "moment": "^2.19.1",
+    "mysql2": "^1.4.2",
+    "node-apollo": "^1.2.1",
+    "node-schedule": "^1.3.0",
+    "number-precision": "^1.2.0",
+    "redis": "2.7.1",
+    "redlock": "^3.1.1",
+    "reflect-metadata": "^0.1.10",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "sequelize": "^4.13.3",
+    "sequelize-typescript": "^0.6.0",
+    "thunkify": "^2.1.2",
+    "ua-parser-js": "0.7.12",
+    "uuid": "3.0.1",
+    "winston": "^3.0.0"
+  }
+}

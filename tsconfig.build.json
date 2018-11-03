@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es6",
+        "moduleResolution": "node",
+        "outDir": "bin",
+        "rootDir": ".",
+        "sourceMap": false,
+        "alwaysStrict": true,
+        "removeComments": true,
+        "noEmitOnError": false,
+        "allowUnreachableCode": true,
+        "allowUnusedLabels": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictNullChecks": false
+    },
+    "include": [
+        "**/*.ts",
+        "!node_modules/",
+        "!typings/"
+    ],
+    "exclude": [
+        "node_modules",
+        "typings",
+        "**/*.d.ts",
+        "src"
+    ]
+}
