@@ -30,7 +30,7 @@ export class RedisEngine extends AbstractEngine {
         });
 
         client.on('error', (err) => {
-            app.logger.error('【redis】 encounters error: %j', err.stack || err);
+            app.logger.error('【redis】 encounters error: %j'+ (err.stack || err));
         });
 
         client.on('end', () => {
@@ -46,7 +46,6 @@ export class RedisEngine extends AbstractEngine {
     /**
      * @description
      * 初始化 redis同步锁
-     * @author lizc
      * @private
      * @param {any} client 
      * @returns 

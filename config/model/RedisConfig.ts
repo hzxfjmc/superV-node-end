@@ -5,7 +5,7 @@
  * @class RedisConfig
  */
 export class RedisConfig {
-    constructor(addr, pass, port = 6379, name = 'read') {
+    constructor(addr, pass, port = 6379, name = 'super') {
         this.port = port;
         this.addr = addr;
         this.name = name;

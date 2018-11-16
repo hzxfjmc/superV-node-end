@@ -3,7 +3,6 @@ import { AbstractEngine } from '../abstract_engine';
 
 /**
  * @description 验证过来的请求是否符合要求并对请求参数进一步处理
- * @author cairc
  * @export
  * @class RequestFilterEngine
  * @extends {AbstractEngine}

@@ -8,7 +8,6 @@ import { ScheduleConfig } from './model/ScheduleConfig';
 
 /**
  * @description 启动配置
- * @author cairc
  * @export
  * @class Config
  */
@@ -17,26 +16,18 @@ export class Config {
         const opts = options as IApolloConfig;
 
         this.port = Number(opts.PORT) || 3030;
-        // this.redis = new RedisConfig(opts.REDIS_CLIENT_ADDR, opts.REDIS_CLIENT_AUTH_PWD);
+        this.redis = new RedisConfig(opts.REDIS_CLIENT_ADDR, opts.REDIS_CLIENT_AUTH_PWD);
         this.dbConfig = new DBConfig(opts.SQL_HOST, Number(opts.SQL_PORT), opts.SQL_NAME, opts.SQL_USER, opts.SQL_AUTH_PWD, opts.SQL_PWD_ENCRYPT_KEY);
         this.dbConfig.pool = new DBConfigPool(opts.SQL_POOL_MAX, opts.SQL_POOL_MIN, opts.SQL_POOL_IDLE);
-        this.scheduleConfig = new ScheduleConfig(opts);
+        // this.scheduleConfig = new ScheduleConfig(opts);
         this.env = env;
-        this.apiPrefix = '/node_cms';
-        this.deployOrigin = opts.ACTIVITY_DEPLOY_ORIGIN;
-        this.staticOrigin = opts.STATIC_FILE_ORIGIN;
+        this.apiPrefix = '/super_api';
+        // this.deployOrigin = opts.ACTIVITY_DEPLOY_ORIGIN;
+        // this.staticOrigin = opts.STATIC_FILE_ORIGIN;
         this.paths = {
             pushPath: opts.PUSH_PATH,
             stashPath: opts.STASH_PATH
         };
-        this.msvUrl = {
-            ACTIVITY: opts.MSV_ACTIVITY,
-            USER: opts.MSV_USER,
-            CONSOLE_CENTER: opts.MSV_CONSOLE_CENTER,
-            CONSOLE_PRODUCT: opts.MSV_CONSOLE_PRODUCT
-        };
-        this.fastdfsTrackers = JSON.parse(opts.FAST_DFS_TRACKERS);
-        this.urlPrefix = opts.URL_PREFIX;
     }
 
     /**
@@ -48,7 +39,7 @@ export class Config {
      * @type {string}
      * @memberof Config
      */
-    public name: string = 'cms';
+    public name: string = 'superY';
     /**
      * @description 版本号
      * @type {string}

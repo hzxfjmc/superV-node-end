@@ -7,7 +7,6 @@ import { AbstractEngine } from '../abstract_engine';
 
 /**
  * @description 提供静态资源服务引擎
- * @author cairc
  * @export
  * @class StaticServerEngine
  * @extends {AbstractEngine}

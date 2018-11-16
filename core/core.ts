@@ -6,7 +6,6 @@ import * as Logger from 'winston';
 import { Config } from '../config/config';
 import { RedisClient } from '../middleware/model/redis_client';
 import { UserDevice } from '../model/common/user_device';
-import * as FdfsClient from 'fdfs';
 
 export interface CoreContext extends Context {
     cookieOption: any;
@@ -61,11 +60,6 @@ export class Core extends Koa {
      * @memberof Core
      */
     public logger: Logger.Logger;
-
-    /**
-     * @description fastdfs客户端
-     */
-    public fdfs: FdfsClient;
 
     constructor() {
         super();

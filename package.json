@@ -1,15 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "start": "umi dev",
-    "build": "umi build",
-    "test": "umi test",
-    "lint": "eslint --ext .js src mock tests",
     "precommit": "lint-staged",
-    "node-build": "tsc -p tsconfig.build.json",
-    "node-start": "node bin/server/index.js",
-    "dev": "cross-env NODE_ENV=development && npm run node-build && npm run node-start",
-    "prod": "cross-env NODE_ENV=production && npm run node-start"
+    "build": "tsc -p tsconfig.build.json",
+    "start": "nodemon ./bin/index.js",
+    "dev": "cross-env NODE_ENV=development && npm run build && npm run start",
+    "prod": "cross-env NODE_ENV=production && npm run start"
   },
   "devDependencies": {
     "@types/koa": "^2.0.46",
@@ -31,6 +27,7 @@
     "mochawesome": "^2.0.2",
     "node-schedule": "^1.2.0",
     "nodemailer": "^2.7.0",
+    "nodemon": "^1.18.6",
     "supertest": "^2.0.1",
     "tslint": "^4.5.1",
     "typescript": "^2.2.1"
@@ -47,9 +44,11 @@
   "dependencies": {
     "device": "0.3.8",
     "joi": "10.4.1",
+    "jsonwebtoken": "^8.4.0",
     "koa": "^2.3.0",
     "koa-body": "^4.0.4",
     "koa-compress": "^2.0.0",
+    "koa-jwt": "^3.5.1",
     "koa-mount": "^3.0.0",
     "koa-router": "^7.2.1",
     "moment": "^2.19.1",

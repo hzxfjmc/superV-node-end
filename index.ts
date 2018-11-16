@@ -1,7 +1,7 @@
 import * as winston from 'winston';
-import { Apollo } from './config/apollo';
 import { Config } from './config/config';
 import { ConfigDefault } from './config/config.default';
+import { ConfigDevelopment } from './config/config.dev';
 import { Core } from './core/core';
 import MomentFormat from './helper/moment_helper';
 import { EnginesHelper } from './middleware/engines_helper';
@@ -23,19 +23,23 @@ const logger = winston.createLogger({
 });
 
 class App {
-    private apollo: Apollo;
     constructor() {
-        this.apollo = new Apollo(logger);
         this.initConfig();
     }
 
     private async initConfig() {
-        const apolloConfigObj = await this.apollo.fetchApolloConfig();
-        const configObj = { ...ConfigDefault, ...apolloConfigObj };
+        let customConfig = {};
+        if (process.env.NODE_ENV === 'production') {
+
+        } else {
+            customConfig = ConfigDevelopment;
+        }
+        const configObj = { ...ConfigDefault, ...customConfig };
         const config = new Config(configObj, process.env.NODE_ENV || 'production');
         const core = new Core();
         core.logger = logger;
         core.config = config;
+        console.log(config.paths.pushPath);
         App.createFolder(config.paths.pushPath, (err) => {
             if (err) logger.error(err);
         });

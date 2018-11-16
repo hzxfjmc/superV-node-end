@@ -9,9 +9,9 @@ export class SessionEngine extends AbstractEngine {
         super();
     }
     public decorator(app: Core) {
-        app.keys = ['yyfax-cms'];
+        app.keys = ['super_y'];
         const CONFIG = {
-            key: app.config.name + '.sess', /** (string) cookie key (default is koa:sess) */
+            key: app.config.name + '.sess', /** superY (string) cookie key (default is koa:sess) */
             cookie: {
                 // maxAge: 1000, /** (number) maxAge in ms (default is 1 days) */
                 overwrite: false, /** (boolean) can overwrite or not (default true) */
@@ -21,6 +21,7 @@ export class SessionEngine extends AbstractEngine {
         };
 
         app.use(async (ctx: CoreContext, next) => {
+            console.log('-------------------');
             let sess: Session;
             let sid;
             let json;
@@ -29,10 +30,12 @@ export class SessionEngine extends AbstractEngine {
             ctx.sessionId = null;
             // 获取sessionID
             sid = ctx.cookies.get(CONFIG.key, ctx.cookieOption);
+            console.log(sid);
             // 获取session值
             if (sid) {
                 try {
                     json = await app.redisClient.get(sid);
+                    console.log('get:', sid, json);
                 } catch (e) {
                     ctx.app.logger.error('从缓存中读取session失败： %s\n', e);
                     json = null;
@@ -76,6 +79,8 @@ export class SessionEngine extends AbstractEngine {
             } catch (err) {
                 throw err;
             } finally {
+                console.log('session');
+                console.log(json, sess);
                 let jsonString = '';
                 if (typeof json === 'object') {
                     jsonString = JSON.stringify(json);
@@ -90,6 +95,7 @@ export class SessionEngine extends AbstractEngine {
                     // session 为空且此次操作不涉及sess修改
                 } else if (sess.changed(jsonString)) {
                     // session变化
+                    console.log('change');
                     jsonString = sess.save();
                     await app.redisClient.set(sid, jsonString);
                     app.redisClient.ttl(sid);
@@ -99,7 +105,9 @@ export class SessionEngine extends AbstractEngine {
                     // session 续期
                     app.redisClient.expire(sid, 3600);
                 }
+                console.log('session');
             }
+            console.log('-------------------');
         });
     }
 }

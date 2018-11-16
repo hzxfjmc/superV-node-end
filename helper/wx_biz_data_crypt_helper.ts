@@ -3,7 +3,6 @@ import * as crypto from 'crypto';
 export default class WXBizDataCryptHelper {
     /**
      * @description 微信用户数据解密
-     * @author cairc
      * @static
      * @param {any} appId
      * @param {any} sessionKey

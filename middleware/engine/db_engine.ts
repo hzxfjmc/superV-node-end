@@ -12,7 +12,7 @@ export class DbEngine extends AbstractEngine {
 
         const config = {
             ...{
-                name: 'yyfax_cms',
+                name: 'super_y',
                 dialect: 'mysql',
                 modelPaths: [
                     path.join(app.config.rootPath, '/model'),
@@ -32,11 +32,12 @@ export class DbEngine extends AbstractEngine {
 
         sequelize
             .authenticate()
-            .then(() => {
+            .then(async () => {
                 app.logger.info('Connection has been established successfully.');
+                // await sequelize.sync({ force: false });
             })
             .catch(err => {
-                app.logger.error('Unable to connect to the database:', err);
+                app.logger.error('Unable to connect to the database:' + err);
             });
 
         app.sequelize = sequelize;

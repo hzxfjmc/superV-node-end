@@ -4,7 +4,6 @@ import { RedisConfig } from '../../config/model/RedisConfig';
 
 /**
  * @description redis 异步封装类
- * @author cairc
  * @class RedisClient
  */
 export class RedisClient {
@@ -13,11 +12,13 @@ export class RedisClient {
     constructor(client, redisConfig) {
         this.client = client;
         this.redisConfig = redisConfig;
+        console.log('set redis');
+        this.client.set('test', 'gggg' );
+        console.log('set redis');
     }
 
     /**
      * @description 获取redis值
-     * @author cairc
      * @param {*} key
      * @returns
      * @memberof RedisClient
@@ -45,7 +46,6 @@ export class RedisClient {
     /**
      * @description
      * 设置缓存
-     * @author lizc
      * @param {string} key 
      * @param {string} value 
      * @param {number} [expire] 
@@ -70,7 +70,6 @@ export class RedisClient {
     /**
      * @description
      * 删除缓存
-     * @author lizc
      * @param {any} args 
      * @returns 
      * @memberof RedisClient
@@ -90,7 +89,6 @@ export class RedisClient {
     /**
      * @description
      * 设置过期时间
-     * @author lizc
      * @param {string} key 
      * @param {number} seconds 
      * @returns 
@@ -111,7 +109,6 @@ export class RedisClient {
     /**
      * @description
      * 设置ttl
-     * @author lizc
      * @param {string} key 
      * @returns 
      * @memberof RedisClient
@@ -131,7 +128,6 @@ export class RedisClient {
     /**
      * @description
      * 获取keys
-     * @author lizc
      * @param {string} key 
      * @returns 
      * @memberof RedisClient
