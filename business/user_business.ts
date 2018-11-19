@@ -1,11 +1,11 @@
 import UserInfo from '../model/user_info';
+import LevelInfo from '../model/level_info';
 import {SvrResponse} from "../model/common/svr_context";
 
 export class UserBusiness {
 
     public async register(ctx, formData) {
         const res = new SvrResponse();
-        formData.authEndTime = '2018-11-22 11:11:11';
         try {
             await UserInfo.create(formData);
             res.display = '注册成功';
@@ -24,5 +24,11 @@ export class UserBusiness {
                 phone
             }
         });
+    }
+
+    public async getGoodsList() {
+        const res = new SvrResponse();
+        res.content = await LevelInfo.findAll();
+        return res;
     }
 }
