@@ -47,6 +47,10 @@ export default class ConsoleServices {
 
     // 权限相关接口
 
+    public async getAuthorizeTree() {
+        return await this.consoleBusiness.getAuthorizeTree();
+    }
+
     public async getRoleList(ctx, formData) {
         return await this.consoleBusiness.getRoleList(ctx, formData);
     }
@@ -121,6 +125,10 @@ export default class ConsoleServices {
         return await this.consoleBusiness.delRole(formData);
     }
 
+    public async getAllRole() {
+        return await this.consoleBusiness.getAllRole();
+    }
+
     // 用户相关接口
     public async addUser(ctx, formData) {
         const schema = Joi.object().keys({
@@ -191,11 +199,37 @@ export default class ConsoleServices {
     }
 
     public async userList(ctx, formData) {
+        const res = new SvrResponse();
+        const schema = Joi.object().keys({
+            pageSize: Joi.number().required(),
+            pageNo: Joi.number().required()
+        }).unknown();
 
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        return await this.consoleBusiness.userList(ctx, formData);
     }
 
     // 用户等级相关接口
-    public async levelList() {}
+    public async levelList(ctx, formData) {
+        const res = new SvrResponse();
+        const schema = Joi.object().keys({
+            pageSize: Joi.number().required(),
+            pageNo: Joi.number().required()
+        }).unknown();
+
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        return await this.consoleBusiness.levelList(ctx, formData);
+    }
 
     public async addLevel(ctx, formData) {
         const res = new SvrResponse();
@@ -246,10 +280,6 @@ export default class ConsoleServices {
     public async delLevel(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
-            unit: Joi.string().required(),
-            term: Joi.number().required(),
-            remark: Joi.string().required(),
-            levelPrice: Joi.number().required(),
             id: Joi.number().required()
         }).unknown();
 

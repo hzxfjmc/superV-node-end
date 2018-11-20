@@ -36,8 +36,8 @@ export class DbEngine extends AbstractEngine {
             .authenticate()
             .then(async () => {
                 app.logger.info('Connection has been established successfully.');
-                await sequelize.sync({ force: false });
-                UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
+                // await sequelize.sync({ force: false });
+                // UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
                 // Role.create({roleName: '管理员', authorize: 'all', status: 1});
             })
             .catch(err => {

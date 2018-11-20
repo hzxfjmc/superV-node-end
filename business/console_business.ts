@@ -3,15 +3,36 @@ import { SvrResponse } from "../model/common/svr_context";
 import * as Enum from '../model/enums';
 import UserInfo from "../model/user_info";
 import LevelInfo from "../model/level_info";
+import MomentHelper from '../helper/moment_helper';
+import Authorize from '../model/authorize';
+import {Op} from 'sequelize';
 
 export class ConsoleBusiness {
 
     public async getRoleList(ctx, formData) {
         const res = new SvrResponse();
-        const roleList = await Role.findAndCountAll();
-        const dataList = roleList.rows || [];
-        res.content = [];
+        const {pageNo = 1, pageSize = 10} = formData;
+        const limit = Number(pageSize);
+        const offset = (Number(pageNo) - 1) * limit;
+        const roleList = await Role.findAndCountAll({
+            where: {
+                status: Enum.RoleStatus.NORMAL
+            },
+            limit,
+            offset
+        });
+        res.content = {
+            dataList: roleList.rows || [],
+            totalSize: roleList.count,
+            pageSize: formData.pageSize,
+            pageNo: formData.pageNo
+        };
         return res;
+    }
+
+    public async getAuthorizeTree() {
+        const authList = await Authorize.findAll();
+
     }
 
     public async addRole(ctx, formData) {
@@ -65,6 +86,13 @@ export class ConsoleBusiness {
         return res;
     }
 
+    public async getAllRole() {
+        const res = new SvrResponse();
+        const roleList = await Role.findAll();
+        res.content = roleList;
+        return res;
+    }
+
     public async addUser(ctx, formData) {
         const res = new SvrResponse();
         try {
@@ -101,9 +129,54 @@ export class ConsoleBusiness {
         return res;
     }
 
-    public async userList() {}
+    public async userList(ctx, formData) {
+        const {pageSize = 10, pageNo = 1} = formData;
+        const limit = Number(pageSize);
+        const offset = (Number(pageNo) - 1) * limit;
+        const userList = await UserInfo.findAndCountAll({
+            where: {
+                status: Enum.UserStatus.NORMAL
+            },
+            limit,
+            offset,
+            order: [['createTime', 'DESC']],
+            raw: true
+        });
+        const dataList = userList.rows || [];
+        dataList.forEach((item: any) => {
+            item.authEndTime =item.authEndTime ? MomentHelper.formatterDate(item.authEndTime) : '';
+        });
+        const res = new SvrResponse();
+        res.content = {
+            dataList,
+            totalSize: userList.count,
+            pageSize: formData.pageSize,
+            pageNo: formData.pageNo
+        };
+        return res;
+    }
 
-    public async levelList() {}
+    public async levelList(ctx, formData) {
+        const {pageSize = 10, pageNo = 1} = formData;
+        const limit = Number(pageSize);
+        const offset = (Number(pageNo) - 1) * limit;
+        const levelList = await LevelInfo.findAndCountAll({
+            where: {
+                status: Enum.LevelStatus.NORMAL
+            },
+            limit,
+            offset,
+            order: [['createTime', 'DESC']]
+        });
+        const res = new SvrResponse();
+        res.content = {
+            dataList: levelList.rows || [],
+            totalSize: levelList.count,
+            pageSize: formData.pageSize,
+            pageNo: formData.pageNo
+        };
+        return res;
+    }
 
     public async addLevel(ctx, formData) {
         const res = new SvrResponse();
