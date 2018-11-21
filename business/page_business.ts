@@ -16,7 +16,7 @@ export class PageBusiness {
                 html += data;
             });
             res.on('end', async () => {
-                const richContent = html;
+                const richContent = this.filterArticleDom(html);
                 const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
             });
         }).on('error', function() {
@@ -24,12 +24,17 @@ export class PageBusiness {
         });
     }
 
-    // private filterArticleDom(html) {
-    //     const $ = cheerio.load(html);
-    //     // const richContentEl = $('#js_article');
-    //     // const richContent = richContentEl.find('p').toArray();
-    //     return richContentEl;
-    // }
+    private filterArticleDom(html) {
+        const $ = cheerio.load(html);
+        const richContentEl = $('#js_articlxe');
+        richContentEl.find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
+            elem.attribs.src = elem.attribs['data-src'];
+        });
+        richContentEl.find('img').each((i, elem) => {
+            console.log(elem.attribs);
+        });
+        return html;
+    }
 
     private async renderStringToFile (ctx, data, action, activity) {
         const result = new SvrResponse();

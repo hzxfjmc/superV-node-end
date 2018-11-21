@@ -10,6 +10,7 @@ export default class UserServices {
         this.userBusiness = new UserBusiness();
     }
 
+    // todo 注册还有相关的购买的情况没加
     public async register(ctx, formData) {
         const schema = Joi.object().keys({
             phone: Joi.string().required(),
@@ -34,6 +35,7 @@ export default class UserServices {
         return await this.userBusiness.register(ctx, formData);
     }
 
+    // todo 登陆的password加密，可以直接密文存错
     public async login(ctx, formData) {
         const schema = Joi.object().keys({
             phone: Joi.string().required(),
@@ -66,5 +68,15 @@ export default class UserServices {
         return res;
     }
 
+    // 待写
     public async resetPwd(ctx, formData) {}
+
+    /**
+     * @description 获取购买可选列表
+     * @param ctx
+     * @param formData
+     */
+    public async goodsList(ctx, formData) {
+        return this.userBusiness.getGoodsList();
+    }
 }

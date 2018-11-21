@@ -2,6 +2,8 @@ import * as path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import AESHelper from '../../helper/aes_helper';
 import { AbstractEngine } from '../abstract_engine';
+// import Role from '../../model/role';
+import UserInfo from '../../model/user_info';
 
 export class DbEngine extends AbstractEngine {
     constructor() {
@@ -35,6 +37,8 @@ export class DbEngine extends AbstractEngine {
             .then(async () => {
                 app.logger.info('Connection has been established successfully.');
                 // await sequelize.sync({ force: false });
+                // UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
+                // Role.create({roleName: '管理员', authorize: 'all', status: 1});
             })
             .catch(err => {
                 app.logger.error('Unable to connect to the database:' + err);
