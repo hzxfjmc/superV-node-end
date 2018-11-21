@@ -38,6 +38,6 @@ functions/mock
 screenshot
 
 # server
-/bin/server
+/bin
 
-/public/assets/h5
+/public
