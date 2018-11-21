@@ -3,6 +3,7 @@ import {SvrResponse} from '../../../model/common/svr_context';
 import { ConsoleBusiness } from "../../../business/console_business";
 import { UserBusiness } from "../../../business/user_business";
 import * as Enum from '../../../model/enums';
+import { needLogin, permission } from '../../../core/decorators/auth_decorator';
 
 export default class ConsoleServices {
 
@@ -32,7 +33,7 @@ export default class ConsoleServices {
         if (user) {
             if (user.password === formData.password) {
                 res.display = '登录成功';
-                ctx.session = {userInfo: {id: user.id, phone: user.phone}};
+                ctx.session = {userInfo: {id: user.id, phone: user.phone, roleId: user.roleId}};
             } else {
                 res.code = -1;
                 res.display = '密码错误';
@@ -130,6 +131,8 @@ export default class ConsoleServices {
     }
 
     // 用户相关接口
+    @needLogin()
+    @permission('admin')
     public async addUser(ctx, formData) {
         const schema = Joi.object().keys({
             phone: Joi.string().required(),
@@ -153,6 +156,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.addUser(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async editUser(ctx, formData) {
         const schema = Joi.object().keys({
             phone: Joi.string().required(),
@@ -177,6 +182,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.editUser(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async delUser(ctx, formData) {
         const schema = Joi.object().keys({
             id: Joi.number().required()
@@ -198,6 +205,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.delUser(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async userList(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -215,6 +224,8 @@ export default class ConsoleServices {
     }
 
     // 用户等级相关接口
+    @needLogin()
+    @permission('admin')
     public async levelList(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -231,6 +242,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.levelList(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async addLevel(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -250,6 +263,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.addLevel(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async editLevel(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -277,6 +292,8 @@ export default class ConsoleServices {
         return await this.consoleBusiness.editLevel(ctx, formData);
     }
 
+    @needLogin()
+    @permission('admin')
     public async delLevel(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -297,5 +314,16 @@ export default class ConsoleServices {
         }
 
         return await this.consoleBusiness.delLevel(ctx, formData);
+    }
+
+    @needLogin()
+    public async logout(ctx) {
+        return await this.userBusiness.logout(ctx);
+    }
+
+    @needLogin()
+    public async getUserInfo(ctx) {
+        const {id} = ctx.session.userInfo;
+        return await this.userBusiness.getUserInfo({id});
     }
 }

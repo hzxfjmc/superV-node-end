@@ -67,11 +67,18 @@ export class RegistryFacade {
 
         const method = Reflect.getOwnMetadata('method', ser[fn]) || ReqMethod.POST;
         const permission = Reflect.getOwnMetadata('PERMISSION_METADATA', ser[fn]);
+        const needLogin = Reflect.getOwnMetadata('NEED_LOGIN', ser[fn]);
 
         let params = {};
         if (method !== ReqMethod[ctx.req.method]) {
             return { status: 404 };
         }
+        if (needLogin) {
+            if (!(ctx.session && ctx.session.userInfo && ctx.session.userInfo.id)) {
+                return {status: 200, code: 900007};
+            }
+        }
+
         if (permission) {
             const res: any = await this.handlePermission(ctx, permission);
             if (res.code !== 0) {
@@ -99,6 +106,14 @@ export class RegistryFacade {
      * @returns {Promise<any>}
      */
     private async handlePermission(ctx, permission) {
-
+        const roleMap = {
+            1: 'admin'
+        };
+        const {roleId} = ctx.session.userInfo;
+        if (permission !== roleMap[roleId]) {
+            return {code: -1, display: '没权限访问' }
+        } else {
+            return {code: 0};
+        }
     }
 }

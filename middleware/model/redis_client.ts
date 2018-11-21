@@ -12,9 +12,6 @@ export class RedisClient {
     constructor(client, redisConfig) {
         this.client = client;
         this.redisConfig = redisConfig;
-        console.log('set redis');
-        this.client.set('test', 'gggg' );
-        console.log('set redis');
     }
 
     /**

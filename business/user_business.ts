@@ -31,4 +31,35 @@ export class UserBusiness {
         res.content = await LevelInfo.findAll();
         return res;
     }
+
+    public async getUserInfo(data) {
+        const res = new SvrResponse();
+        const userInfo = await UserInfo.findById(data.id);
+        if (userInfo) {
+            delete userInfo.password;
+            res.content = {
+                id: userInfo.id,
+                phone: userInfo.phone,
+                roleId: userInfo.roleId
+            };
+        } else {
+            res.code = -1;
+            res.display = '该用户不存在';
+        }
+        return res;
+    }
+
+    public async logout(ctx) {
+        const res = new SvrResponse();
+        if (ctx.sessionId) {
+           const result = await ctx.app.redisClient.del(ctx.sessionId);
+           if (result) {
+               res.display = '退出成功';
+           } else {
+               res.code = -1;
+               res.display = '退出失败';
+           }
+        }
+        return res;
+    }
 }
