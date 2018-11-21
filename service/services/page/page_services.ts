@@ -23,4 +23,8 @@ export default class PageServices {
         }
         return await this.pageBusiness.getHtmlByUrl(ctx, formData);
     }
+
+    public async uploadFile(ctx, formData) {
+        return await this.pageBusiness.upload(ctx, formData);
+    }
 }

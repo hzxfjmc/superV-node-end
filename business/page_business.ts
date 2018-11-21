@@ -4,8 +4,10 @@ import * as path from "path";
 import * as fs from "fs";
 import { SvrResponse } from "../model/common/svr_context";
 import UuidHelper from '../helper/uuid_helper';
+import MomentHelper from '../helper/moment_helper';
 const rootPath = path.resolve(__dirname, '../../');
-
+const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\fileStore' : '/file/fileStore';
+const sep = path.sep;
 export class PageBusiness {
     public async getHtmlByUrl(ctx, formData) {
         const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
@@ -84,5 +86,34 @@ export class PageBusiness {
             url = action === 'push' ? `${referer}s/${fileName}` : `${referer}d/${fileName}`;
         }
         return action === 'push' ? {activityPageUrl: url} : {stashPageUrl: url};
+    }
+
+    public async upload(ctx, formData) {
+        const res = new SvrResponse();
+        const { files } = formData;
+        const filesArr = [files];
+        const date = MomentHelper.formatterDate(new Date(), 'YYYY-MM-DD');
+        console.log(files);
+        try {
+            const filePathArr = [];
+            for (let file of filesArr) {
+                // 创建可读流
+                const reader = fs.createReadStream(file.path);
+                // 获取上传文件扩展名
+                let filePath = rootPath + `${sep}${date}${sep}${file.name}`;
+                // 创建可写流
+                const upStream = fs.createWriteStream(filePath);
+                // 可读流通过管道写入可写流
+                reader.pipe(upStream);
+                filePathArr.push(filePath);
+            }
+            res.display = '上传成功';
+            res.content = filePathArr;
+        } catch(e) {
+            res.code = -1;
+            res.display = `上传失败${e}`;
+        }
+
+        return res;
     }
 }
