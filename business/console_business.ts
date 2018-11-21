@@ -5,7 +5,7 @@ import UserInfo from "../model/user_info";
 import LevelInfo from "../model/level_info";
 import MomentHelper from '../helper/moment_helper';
 import Authorize from '../model/authorize';
-import {Op} from 'sequelize';
+import Paging from '../helper/paging';
 
 export class ConsoleBusiness {
 
@@ -21,18 +21,12 @@ export class ConsoleBusiness {
             limit,
             offset
         });
-        res.content = {
-            dataList: roleList.rows || [],
-            totalSize: roleList.count,
-            pageSize: formData.pageSize,
-            pageNo: formData.pageNo
-        };
+        res.content = Paging.structure(pageNo, pageSize, roleList.count, roleList.rows);
         return res;
     }
 
     public async getAuthorizeTree() {
         const authList = await Authorize.findAll();
-
     }
 
     public async addRole(ctx, formData) {
@@ -147,12 +141,7 @@ export class ConsoleBusiness {
             item.authEndTime =item.authEndTime ? MomentHelper.formatterDate(item.authEndTime) : '';
         });
         const res = new SvrResponse();
-        res.content = {
-            dataList,
-            totalSize: userList.count,
-            pageSize: formData.pageSize,
-            pageNo: formData.pageNo
-        };
+        res.content = Paging.structure(pageNo, pageSize, userList.count, dataList);
         return res;
     }
 
@@ -169,12 +158,7 @@ export class ConsoleBusiness {
             order: [['createTime', 'DESC']]
         });
         const res = new SvrResponse();
-        res.content = {
-            dataList: levelList.rows || [],
-            totalSize: levelList.count,
-            pageSize: formData.pageSize,
-            pageNo: formData.pageNo
-        };
+        res.content = Paging.structure(pageNo, pageSize, levelList.count, levelList.rows);
         return res;
     }
 
