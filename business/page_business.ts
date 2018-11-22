@@ -2,13 +2,44 @@ import * as cheerio from 'cheerio';
 import * as https from 'https';
 import * as path from "path";
 import * as fs from "fs";
+import {Op} from 'sequelize';
 import { SvrResponse } from "../model/common/svr_context";
 import UuidHelper from '../helper/uuid_helper';
+import Article from '../model/article';
 import MomentHelper from '../helper/moment_helper';
+import Paging from "../helper/paging";
+import * as Enum from '../model/enums';
 const rootPath = path.resolve(__dirname, '../../');
 const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\fileStore' : '/file/fileStore';
 const sep = path.sep;
 export class PageBusiness {
+
+    public async articleList(ctx, formData) {
+        const res = new SvrResponse();
+        const {pageSize = 10, pageNo = 1, userId} = formData;
+        const limit = Number(pageSize);
+        const offset = (Number(pageNo) - 1) * limit;
+        const article = await Article.findAndCountAll({
+            where: {
+                userId,
+                status: {
+                    [Op.not]: Enum.ArticelStatus.DEL
+                }
+            },
+            limit,
+            offset,
+            order: [['createTime', 'DESC']],
+            raw: true
+        });
+        article.rows.forEach((item: any) => {
+            item.createTime = MomentHelper.formatterDate(item.createTime);
+            item.updateTime= MomentHelper.formatterDate(item.updateTime);
+        });
+        res.content = Paging.structure(pageNo, pageSize, article.count, article.rows);
+        return res;
+    }
+
+
     public async getHtmlByUrl(ctx, formData) {
         const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
 
