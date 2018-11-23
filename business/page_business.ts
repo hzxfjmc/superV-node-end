@@ -5,10 +5,45 @@ import * as fs from "fs";
 import { SvrResponse } from "../model/common/svr_context";
 import UuidHelper from '../helper/uuid_helper';
 import MomentHelper from '../helper/moment_helper';
+import Article from '../model/article';
 const rootPath = path.resolve(__dirname, '../../');
-const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\fileStore' : '/file/fileStore';
+const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\file\\fileStore' : '/file/fileStore';
+const pushFileOrigin = process.env.NODE_ENN === 'development' ? 'http://localhost:6060/fileStore' : 'http://localhost:6060/fileStore';
 const sep = path.sep;
+
 export class PageBusiness {
+
+    public async createPage(ctx, formData) {
+        const res = new SvrResponse();
+        try {
+            delete formData.id;
+            const article = await Article.create(formData);
+            res.display = '创建文章成功';
+            res.content = article;
+        } catch(e) {
+            res.code = -1;
+            res.display = `创建文章失败${e}`;
+        }
+        return res;
+    }
+
+    public async stashPage(ctx, formData) {
+        const res = new SvrResponse();
+        const {id} = formData;
+        try {
+            await Article.update(formData, {where: {id}});
+        } catch(e) {
+            res.code = -1;
+            res.display = '文章存草稿失败';
+        }
+        return res;
+    }
+
+    public async checkArticleExist(id) {
+        return await Article.findById(id);
+    }
+
+
     public async getHtmlByUrl(ctx, formData) {
         const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
 
@@ -93,27 +128,42 @@ export class PageBusiness {
         const { files } = formData;
         const filesArr = [files];
         const date = MomentHelper.formatterDate(new Date(), 'YYYY-MM-DD');
-        console.log(files);
+        const dirPath = fileStore + `${sep}${date}${sep}`;
+        const origin = pushFileOrigin + `/${date}/`;
+        const filePathArr = [];
+        await PageBusiness.createFolder(dirPath);
         try {
-            const filePathArr = [];
             for (let file of filesArr) {
-                // 创建可读流
                 const reader = fs.createReadStream(file.path);
-                // 获取上传文件扩展名
-                let filePath = rootPath + `${sep}${date}${sep}${file.name}`;
-                // 创建可写流
+                let filePath = dirPath + file.name;
                 const upStream = fs.createWriteStream(filePath);
-                // 可读流通过管道写入可写流
                 reader.pipe(upStream);
-                filePathArr.push(filePath);
+                filePathArr.push(origin + file.name);
             }
+
             res.display = '上传成功';
             res.content = filePathArr;
         } catch(e) {
             res.code = -1;
             res.display = `上传失败${e}`;
         }
-
         return res;
+    }
+
+    /**
+     * @description 创建文件夹
+     * @param dirpath
+     * @param callback
+     */
+    private static createFolder(dirpath) {
+        console.log(dirpath);
+        if(fs.existsSync(dirpath)){
+            return true;
+        }else{
+            if(PageBusiness.createFolder(path.dirname(dirpath))){
+                fs.mkdirSync(dirpath);
+                return true;
+            }
+        }
     }
 }

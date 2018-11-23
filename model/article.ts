@@ -18,7 +18,7 @@ export default class Article extends Model<Article> {
         comment: '文章标题',
         field: 'article_title'
     })
-    public articleTile: string;
+    public articleTitle: string;
 
     @AllowNull(true)
     @Column({
@@ -52,7 +52,8 @@ export default class Article extends Model<Article> {
     })
     public articleTypeId: number;
 
-    @AllowNull(true)
+    @AllowNull(false)
+    @Default(1)
     @Column({
         type: DataType.TINYINT(),
         comment: '文章状态 1 草稿 2 未公开 3 公开 4 删除',
