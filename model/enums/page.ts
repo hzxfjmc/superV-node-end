@@ -4,3 +4,8 @@ export enum ArticleStatus {
     'PUBLIC' = 3,
     'DEL' = 4
 }
+
+export enum ArticleCollected {
+    'COLLECTED' = 1,
+    'UNCOLLECTED' = 0
+}

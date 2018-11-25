@@ -40,7 +40,7 @@ export default class PageServices {
             result.display = `参数错误${error}`;
             return result;
         }
-        formData.userId = 1;
+        formData.userId = ctx.session.userInfo.id;
         const article = await this.pageBusiness.checkArticleExist(formData.id);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             result.code = -1;
@@ -72,6 +72,190 @@ export default class PageServices {
         return result;
     }
 
+    public async createArticleChannel(ctx, formData) {
+        const schema = Joi.object().keys({
+            folderName: Joi.string().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        return await this.pageBusiness.createArticleChannel(formData);
+    }
+
+    public async editArticleChannel(ctx, formData) {
+        const schema = Joi.object().keys({
+            folderName: Joi.string().required(),
+            id: Joi.number().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+
+        const folder = await this.pageBusiness.checkArticleChannel(formData.id, ctx.session.userInfo.id);
+        if (!folder) {
+            res.code = -1;
+            res.display = '该文章列表类型不存在';
+            return res;
+        }
+        try {
+            folder.folderName = formData.folderName;
+            await folder.save();
+            res.display = '修改成功';
+        } catch(e) {
+            res.code = -1;
+            res.display = '修改失败';
+        }
+        return res;
+    }
+
+    public async moveArticleTo(ctx, formData) {
+        const schema = Joi.object().keys({
+            id: Joi.number().required(),
+            articleId: Joi.number().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        const folder = await this.pageBusiness.checkArticleChannel(formData.id, ctx.session.userInfo.id);
+        if (!folder) {
+            res.code = -1;
+            res.display = '该文件不存在';
+            return res;
+        }
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        if (!article || article.status === Enum.ArticleStatus.DEL) {
+            res.code = -1;
+            res.display = '该文章不存在';
+            return res;
+        }
+        try {
+            article.articleTypeId = formData.id;
+            await article.save();
+            res.display = '操作成功';
+        } catch(e) {
+            res.code = -1;
+            res.display = '操作失败';
+        }
+        return res;
+    }
+
+    public async getArticleChannelList(ctx, formData) {
+        return await this.pageBusiness.getArticleChannelList(ctx);
+    }
+
+    public async delArticleChannel(ctx, formData) {
+        const schema = Joi.object().keys({
+            id: Joi.number().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        const folder = await this.pageBusiness.checkArticleChannel(formData.id, ctx.session.userInfo.id);
+
+        if (!folder) {
+            res.code = -1;
+            res.display = '该文章列表类型不存在';
+            return res;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        return await this.pageBusiness.delArticleChannel(formData);
+    }
+
+    public async getArticleList(ctx, formData) {
+        const res = new SvrResponse();
+        const schema = Joi.object().keys({
+            folderId: Joi.number().required()
+        }).unknown();
+        const { error } = Joi.validate(formData, schema);
+        const {folderId} = formData;
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+
+        if (folderId !== 0) {
+            const folder = await this.pageBusiness.checkArticleChannel(folderId, ctx.session.userInfo.id);
+            if (!folder) {
+                res.code = -1;
+                res.display = '该文章列表类型不存在';
+                return res;
+            }
+        }
+
+        formData.userId = ctx.session.userInfo.id;
+        res.content = await this.pageBusiness.getArticleList(formData);
+        return res;
+    }
+
+    public async changeCollectStatus(ctx, formData) {
+        const schema = Joi.object().keys({
+            status: Joi.number().required(),
+            articleId: Joi.number().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const {articleId, status} = formData;
+        const { error } = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        if (!article || article.status === Enum.ArticleStatus.DEL) {
+            res.code = -1;
+            res.display = '该文章不存在';
+            return res;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        const collect = await this.pageBusiness.userIsCollected(formData.userId, articleId, status);
+        if (!collect && status === Enum.ArticleCollected.COLLECTED) {
+            return await this.pageBusiness.createCollected(formData);
+        } else if (collect && status === Enum.ArticleCollected.UNCOLLECTED) {
+            try {
+                collect.status = status;
+                await collect.save();
+                res.display = '取消收藏成功';
+            } catch(e) {
+                res.code = -1;
+                res.display = '取消收藏失败';
+            }
+        } else {
+            res.code = -1;
+            res.display = '操作异常';
+        }
+        return res;
+    }
+
+    public async getCollectedArticle(ctx, formData) {
+        const res = new SvrResponse();
+        formData.userId = ctx.session.userInfo.id;
+        const collectedList = await this.pageBusiness.getCollectedArticle(formData);
+
+        const articleIds = collectedList.map(item => item.articleId);
+
+        res.content = await this.pageBusiness.getArticleListByIds(articleIds);
+        return res;
+    }
+
+    // @needLogin()
     public async getHtmlByUrl(ctx, formData) {
         const schema = Joi.object().keys({
             url: Joi.string()
@@ -83,65 +267,20 @@ export default class PageServices {
             result.display = '参数错误';
             return result;
         }
+        // const {url} = formData;
+        // const {id} = ctx.session.userInfo;
+        // const article = await this.pageBusiness.checkUrlIsExist(id, url);
+        //
+        // if (article) {
+        //     res.code = -1;
+        //     res.display = '已经导入过此篇文章';
+        //     return res;
+        // }
+
         return await this.pageBusiness.getHtmlByUrl(ctx, formData);
     }
 
     public async uploadFile(ctx, formData) {
         return await this.pageBusiness.upload(ctx, formData);
     }
-
-    @needLogin()
-    @permission('admin')
-    public async articleList(ctx, formData) {
-        const res = new SvrResponse();
-        const schema = Joi.object().keys({
-            pageSize: Joi.number().required(),
-            pageNo: Joi.number().required()
-        }).unknown();
-        const {error} = Joi.validate(formData, schema);
-        if (error) {
-            res.code = -1;
-            res.display = '参数错误';
-            return res;
-        }
-        formData.userId = ctx.session.userInfo.id;
-        return await this.pageBusiness.articleList(ctx, formData);
-    }
-
-    @needLogin()
-    @permission('admin')
-    public async changeArticleStatus(ctx, formData) {
-        const res = new SvrResponse();
-        const schema = Joi.object().keys({
-            id: Joi.number().required(),
-            nextStatus: Joi.number().required().allow(3).allow(4)
-        }).unknown();
-        const {id, nextStatus} = formData;
-        const {error} = Joi.validate(formData, schema);
-        if (error) {
-            res.code = -1;
-            res.display = '参数错误';
-            return res;
-        }
-        const article = await this.pageBusiness.checkArticleExist(id);
-        if (!article || article.status === Enum.ArticleStatus.DEL) {
-            res.code = -1;
-            res.display = '该文章不存在';
-            return res;
-        }
-        if (article.status === nextStatus) {
-            res.display = '更新文章状态成功';
-            return res;
-        }
-        try {
-            article.status = nextStatus;
-            article.save();
-            res.display = '更新文章状态成功';
-        } catch (e) {
-            res.code = -1;
-            res.display = '更新文章状态失败';
-        }
-        return res;
-    }
-
 }

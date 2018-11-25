@@ -44,7 +44,8 @@ export default class Article extends Model<Article> {
     })
     public articleDeployPath: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
+    @Default(0)
     @Column({
         type: DataType.INTEGER(),
         comment: '文章所属分类',
@@ -77,6 +78,14 @@ export default class Article extends Model<Article> {
         field: 'user_id'
     })
     public userId: number;
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.STRING(),
+        comment: '生成页面的来源地址',
+        field: 'channel_url'
+    })
+    public channelUrl: string;
 
     @CreatedAt
     @Column({

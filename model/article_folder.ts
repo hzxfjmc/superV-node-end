@@ -5,7 +5,7 @@ import { AllowNull, AutoIncrement, Column, CreatedAt, DataType, Model, PrimaryKe
     freezeTableName: true,
     tableName: 'tb_article_folder'
 })
-export default class articleFolder extends Model<articleFolder> {
+export default class ArticleFolder extends Model<ArticleFolder> {
     @PrimaryKey
     @AutoIncrement
     @AllowNull(false)
@@ -27,14 +27,6 @@ export default class articleFolder extends Model<articleFolder> {
         field: 'folder_name'
     })
     public folderName: string;
-
-    @AllowNull(false)
-    @Column({
-        type: DataType.TINYINT(),
-        comment: '状态 1 正常 2 删除',
-        field: 'status'
-    })
-    public status: number;
 
     @CreatedAt
     @Column({

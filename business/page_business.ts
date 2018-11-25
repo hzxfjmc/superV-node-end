@@ -5,9 +5,10 @@ import * as fs from "fs";
 import {Op} from 'sequelize';
 import { SvrResponse } from "../model/common/svr_context";
 import UuidHelper from '../helper/uuid_helper';
-import Article from '../model/article';
 import MomentHelper from '../helper/moment_helper';
 import Article from '../model/article';
+import ArticleFolder from '../model/article_folder';
+import UserCollect from '../model/user_collect';
 import Paging from "../helper/paging";
 import * as Enum from '../model/enums';
 const rootPath = path.resolve(__dirname, '../../');
@@ -16,33 +17,6 @@ const pushFileOrigin = process.env.NODE_ENN === 'development' ? 'http://localhos
 const sep = path.sep;
 
 export class PageBusiness {
-
-    public async articleList(ctx, formData) {
-        const res = new SvrResponse();
-        const {pageSize = 10, pageNo = 1, userId} = formData;
-        const limit = Number(pageSize);
-        const offset = (Number(pageNo) - 1) * limit;
-        const article = await Article.findAndCountAll({
-            where: {
-                userId,
-                status: {
-                    [Op.not]: Enum.ArticelStatus.DEL
-                }
-            },
-            limit,
-            offset,
-            order: [['createTime', 'DESC']],
-            raw: true
-        });
-        article.rows.forEach((item: any) => {
-            item.createTime = MomentHelper.formatterDate(item.createTime);
-            item.updateTime= MomentHelper.formatterDate(item.updateTime);
-        });
-        res.content = Paging.structure(pageNo, pageSize, article.count, article.rows);
-        return res;
-    }
-
-
 
     public async createPage(ctx, formData) {
         const res = new SvrResponse();
@@ -74,34 +48,81 @@ export class PageBusiness {
         return await Article.findById(id);
     }
 
-
+    // 一键导入
     public async getHtmlByUrl(ctx, formData) {
         const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
-
+        // const option={
+        //     path: url,
+        //     headers:{
+        //         'Host':'mp.weixin.qq.com',
+        //         'Referer':'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw?'
+        //     }
+        // };
         https.get(url, (res) => {
             let html = '';
             res.on('data', (data) => {
                 html += data;
             });
             res.on('end', async () => {
-                const richContent = this.filterArticleDom(html);
-                const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
+                const config = this.filterArticleDom(html);
+                config.channelUrl = url;
+                config.userId = 1;
+                // const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
+                await this.createPage(ctx, config);
             });
-        }).on('error', function() {
-            console.log('获取数据出错！');
+        }).on('error', function(error) {
+            console.log('获取数据出错！', error);
+        });
+    }
+
+    public async checkUrlIsExist(id, url) {
+        return await Article.findOne({
+            where: {
+                id,
+                channelUrl: url,
+                status: {
+                    [Op.not]: Enum.ArticleStatus.DEL
+                }
+            }
         });
     }
 
     private filterArticleDom(html) {
+        // console.log(html);
         const $ = cheerio.load(html);
-        const richContentEl = $('#js_articlxe');
-        richContentEl.find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
-            elem.attribs.src = elem.attribs['data-src'];
+        const endPrx = '&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1';
+        // const richContentEl = $('#page-content');
+        const pageConfig: any = {};
+
+        // 获取文章title
+        pageConfig.articleTitle = $('.rich_media_title').text().trim().replace('\t\n', '');
+        console.log(pageConfig.articleTitle);
+        // 处理所有的img的src问题
+        // richContentEl.find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
+        //     console.log(elem.attribs['data-src'], elem.attribs.src);
+        // });
+        // console.log($('.__bg_gif '));
+        const pArray: any = [{
+            type: 'header',
+            title: pageConfig.articleTitle,
+            color: "#5075c3"
+        }];
+        $('.rich_media_content').children('p').each((i, item) => {
+            if (item.children[0].name === 'img') {
+                const parentStyle = item.attribs;
+                const childrenStyle = item.children[0].attribs;
+                pArray.push({
+                    type: 'dom-img',
+                    fileList: [],
+                    html: `<p style="${parentStyle.style}">
+                        <img style="${childrenStyle.style}" src="${childrenStyle['data-src']}${endPrx}"/>
+                    </p>`
+                });
+            }
         });
-        richContentEl.find('img').each((i, elem) => {
-            console.log(elem.attribs);
-        });
-        return html;
+        pageConfig.articleConfig = JSON.stringify(pArray);
+        console.log('asdasd');
+        return pageConfig;
     }
 
     private async renderStringToFile (ctx, data, action, activity) {
@@ -153,6 +174,132 @@ export class PageBusiness {
         }
         return action === 'push' ? {activityPageUrl: url} : {stashPageUrl: url};
     }
+
+    public async getArticleListByIds(articleIds) {
+        const articleList: any = await Article.findAll({
+            where: {
+                id: {
+                    [Op.in]: articleIds
+                }
+            },
+            attributes: ['id', 'articleTitle', 'articleDesc',
+                'articleTypeId', 'status', 'createTime', 'updateTime'
+            ],
+            raw: true
+        });
+        articleList.forEach(item => {
+            item.createTime = MomentHelper.formatterDate(item.createTime);
+            item.updateTime = MomentHelper.formatterDate(item.updateTime);
+        });
+        return articleList;
+    }
+
+    public async createArticleChannel(formData) {
+        return await ArticleFolder.create(formData);
+    }
+
+    public async checkArticleChannel(id, userId) {
+        return await ArticleFolder.findOne({
+            where: {
+                id,
+                userId
+            }
+        });
+    }
+
+    public async userIsCollected(userId, articleId, status) {
+        return await UserCollect.findOne({
+            where: {
+                userId,
+                articleId
+            }
+        })
+    }
+
+    public async createCollected(formData) {
+        const res = new SvrResponse();
+        try {
+            await UserCollect.create(formData);
+            res.display = '收藏成功';
+        } catch (e) {
+            res.code = -1;
+            res.display = '收藏失败';
+        }
+        return res;
+    }
+
+    public async getCollectedArticle(formData) {
+        return await UserCollect.findAll({
+            where: {
+                userId: formData.userId,
+                status: Enum.ArticleCollected.COLLECTED
+            }
+        });
+    }
+
+    public async delArticleChannel(formData) {
+        const res = new SvrResponse();
+        try {
+            const {userId, id} = formData;
+            const articleList = await Article.findAll({
+                where: {
+                    userId,
+                    status: {
+                        [Op.not]: Enum.ArticleStatus.DEL
+                    },
+                    articleTypeId: id,
+                },
+                attributes: ['id']
+            });
+            const delRes = await ArticleFolder.destroy({
+                where: {
+                    id
+                }
+            });
+            if (delRes) {
+                const articleIds = articleList.map(item => item.id);
+                await Article.update({articleTypeId: 0}, {
+                    where: {
+                        id: {
+                            [Op.in]: articleIds
+                        }
+                    }
+                });
+            }
+        } catch(e) {
+            res.code = -1;
+            res.display = '删除失败';
+        }
+        return res;
+    }
+
+    public async getArticleChannelList(ctx) {
+        return await ArticleFolder.findAll({
+            where: {
+                userId: ctx.session.userInfo.id
+            }
+        })
+    }
+
+    public async getArticleList(formData) {
+        const {folderId, userId} = formData;
+        const articleList: any = await Article.findAll({
+            where: {
+                userId,
+                articleTypeId: folderId
+            },
+            attributes: ['id', 'articleTitle', 'articleDesc',
+                'articleTypeId', 'status', 'createTime', 'updateTime'
+            ],
+            raw: true
+        });
+        articleList.forEach(item => {
+            item.createTime = MomentHelper.formatterDate(item.createTime);
+            item.updateTime = MomentHelper.formatterDate(item.updateTime);
+        });
+        return articleList;
+    }
+
 
     public async upload(ctx, formData) {
         const res = new SvrResponse();

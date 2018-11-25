@@ -5,7 +5,7 @@ import { AllowNull, AutoIncrement, Column, CreatedAt, DataType, Model, PrimaryKe
     freezeTableName: true,
     tableName: 'tb_user_collect'
 })
-export default class userCollect extends Model<userCollect> {
+export default class UserCollect extends Model<UserCollect> {
     @PrimaryKey
     @AutoIncrement
     @AllowNull(false)
@@ -32,7 +32,7 @@ export default class userCollect extends Model<userCollect> {
     @Default(0)
     @Column({
         type: DataType.TINYINT(),
-        comment: '状态 0 未收藏 2 收藏',
+        comment: '状态 0 未收藏 1 收藏',
         field: 'status'
     })
     public status: number;

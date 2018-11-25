@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 import {SvrResponse} from '../../../model/common/svr_context';
 import { UserBusiness } from "../../../business/user_business";
+import * as Enum from '../../../model/enums';
 
 export default class UserServices {
 
@@ -31,7 +32,7 @@ export default class UserServices {
             res.display = '该用户已存在';
             return res;
         }
-
+        formData.roleId = Enum.UserRole.TOURIST;
         return await this.userBusiness.register(ctx, formData);
     }
 

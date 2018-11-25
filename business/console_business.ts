@@ -6,6 +6,8 @@ import LevelInfo from "../model/level_info";
 import MomentHelper from '../helper/moment_helper';
 import Authorize from '../model/authorize';
 import Paging from '../helper/paging';
+import Article from "../model/article";
+import {Op} from "sequelize";
 
 export class ConsoleBusiness {
 
@@ -208,4 +210,28 @@ export class ConsoleBusiness {
         return res;
     }
 
+    public async articleList(ctx, formData) {
+        const res = new SvrResponse();
+        const {pageSize = 10, pageNo = 1, userId} = formData;
+        const limit = Number(pageSize);
+        const offset = (Number(pageNo) - 1) * limit;
+        const article = await Article.findAndCountAll({
+            where: {
+                userId,
+                status: {
+                    [Op.not]: Enum.ArticleStatus.DEL
+                }
+            },
+            limit,
+            offset,
+            order: [['createTime', 'DESC']],
+            raw: true
+        });
+        article.rows.forEach((item: any) => {
+            item.createTime = MomentHelper.formatterDate(item.createTime);
+            item.updateTime= MomentHelper.formatterDate(item.updateTime);
+        });
+        res.content = Paging.structure(pageNo, pageSize, article.count, article.rows);
+        return res;
+    }
 }
