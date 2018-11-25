@@ -68,6 +68,10 @@ export default class PageServices {
             result.display = '该文章不存在';
             return result;
         }
+        if (article.status === Enum.ArticleStatus.PUBLIC) {
+            article.readTotal = article.readTotal + 1;
+            article.save();
+        }
         result.content = article;
         return result;
     }

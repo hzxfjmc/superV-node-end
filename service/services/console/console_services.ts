@@ -351,6 +351,38 @@ export default class ConsoleServices {
 
     @needLogin()
     @permission('admin')
+    public async delArticle(ctx, formData) {
+        const res = new SvrResponse();
+        const schema = Joi.object().keys({
+            id: Joi.number().required(),
+        }).unknown();
+        const {id} = formData;
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        const article = await this.pageBusiness.checkArticleExist(id);
+        if (!article || article.status === Enum.ArticleStatus.DEL) {
+            res.code = -1;
+            res.display = '该文章不存在';
+            return res;
+        }
+        if (article.status === Enum.ArticleStatus.DEL) {
+            res.display = '更新文章状态成功';
+            return res;
+        }
+        try {
+            article.status = Enum.ArticleStatus.DEL;
+            await article.save();
+            res.display = '更新文章状态成功';
+        } catch (e) {
+            res.code = -1;
+            res.display = '更新文章状态失败';
+        }
+        return res;
+    }
     public async changeArticleStatus(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -376,7 +408,7 @@ export default class ConsoleServices {
         }
         try {
             article.status = nextStatus;
-            article.save();
+            await article.save();
             res.display = '更新文章状态成功';
         } catch (e) {
             res.code = -1;
