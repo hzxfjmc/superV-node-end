@@ -93,4 +93,99 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public updateTime: Date;
 
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '用户头像',
+        field: 'headimgurl'
+    })
+    public headimgurl: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '用户姓名',
+        field: 'name'
+    })
+    public name: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '单位名称',
+        field: 'company'
+    })
+    public company: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '部门名称',
+        field: 'department'
+    })
+    public department: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '职位',
+        field: 'job'
+    })
+    public job: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '税号',
+        field: 'dutyNumber'
+    })
+    public dutyNumber: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: 'qq号码',
+        field: 'qq'
+    })
+    public qq: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '名片标题',
+        field: 'businessCardTitle'
+    })
+    public businessCardTitle: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '名片描述',
+        field: 'businessCarddescribe'
+    })
+    public businessCarddescribe: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(224),
+        comment: '微信二维码',
+        field: 'wechatImg'
+    })
+    public wechatImg: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '微信号',
+        field: 'wechatNumber'
+    })
+    public wechatNumber: string;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(20),
+        comment: '用户签名',
+        field: 'sign'
+    })
+    public sign: string;
 }
