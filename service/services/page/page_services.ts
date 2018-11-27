@@ -14,7 +14,7 @@ export default class PageServices {
 
     public async createPage(ctx, formData) {
         const schema = Joi.object().keys({
-            articleConfig: Joi.object().required(),
+            articleConfig: Joi.string(),
         }).unknown();
         const result = new SvrResponse();
         const {error} = Joi.validate(formData, schema);
@@ -23,6 +23,7 @@ export default class PageServices {
             result.display = '参数错误';
             return result;
         }
+        formData.userId = ctx.session.userInfo.id;
         return await this.pageBusiness.createPage(ctx, formData);
     }
 
@@ -30,7 +31,7 @@ export default class PageServices {
         const schema = Joi.object().keys({
             articleTitle: Joi.string().required(),
             articleDesc: Joi.string(),
-            articleConfig: Joi.array().required(),
+            articleConfig: Joi.string().required(),
             id: Joi.number().required()
         }).unknown();
         const result = new SvrResponse();
@@ -49,6 +50,34 @@ export default class PageServices {
         }
 
         return await this.pageBusiness.stashPage(ctx, formData);
+    }
+
+    public async pushPage(ctx, formData) {
+        const schema = Joi.object().keys({
+            articleTitle: Joi.string().required(),
+            articleDesc: Joi.string(),
+            articleConfig: Joi.string().required(),
+            id: Joi.number().required(),
+            isPublic: Joi.boolean().required(),
+            isShowInfo: Joi.boolean().required(),
+            shareShow: Joi.boolean().required(),
+            addCopyright: Joi.boolean().required(),
+        }).unknown();
+        const res = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = `参数错误${error}`;
+            return res;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        const article = await this.pageBusiness.checkArticleExist(formData.id);
+        if (!article || article.status === Enum.ArticleStatus.DEL) {
+            res.code = -1;
+            res.display = '该文章不存在';
+            return res;
+        }
+        return await this.pageBusiness.pushPage(ctx, formData);
     }
 
     public async getArticleDetail(ctx, formData) {

@@ -44,6 +44,20 @@ export class PageBusiness {
         return res;
     }
 
+    public async pushPage(ctx, formData) {
+        const res = new SvrResponse();
+        const {id, isPublic} = formData;
+        formData.status = isPublic ? Enum.ArticleStatus.PUBLIC : Enum.ArticleStatus.UNPUBLIC;
+        try {
+            await Article.update(formData, {where: {id}});
+            res.display = '文章发布成功';
+        } catch(e) {
+            res.code = -1;
+            res.display = '文章发布失败';
+        }
+        return res;
+    }
+
     public async checkArticleExist(id) {
         return await Article.findById(id);
     }

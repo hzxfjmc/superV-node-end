@@ -87,6 +87,42 @@ export default class Article extends Model<Article> {
     })
     public channelUrl: string;
 
+    @AllowNull(false)
+    @Default(0)
+    @Column({
+        type: DataType.TINYINT(),
+        comment: '是否公开发布 0 否 1 是',
+        field: 'is_public'
+    })
+    public isPublic: number;
+
+    @AllowNull(false)
+    @Default(0)
+    @Column({
+        type: DataType.TINYINT(),
+        comment: '是否显示发布人',
+        field: 'is_show_info'
+    })
+    public isShowInfo: number;
+
+    @AllowNull(false)
+    @Default(1)
+    @Column({
+        type: DataType.TINYINT(),
+        comment: '是否分享显示发布人头像',
+        field: 'share_show'
+    })
+    public shareShow: number;
+
+    @AllowNull(false)
+    @Default(0)
+    @Column({
+        type: DataType.TINYINT(),
+        comment: '是否加版权声明',
+        field: 'add_copyright'
+    })
+    public addCopyright: number;
+
     @CreatedAt
     @Column({
         type: DataType.DATE,

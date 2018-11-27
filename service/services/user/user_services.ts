@@ -55,7 +55,7 @@ export default class UserServices {
             if (user.password === formData.password) {
                 console.log(ctx.seesion);
                 res.display = '登录成功';
-                ctx.session = {userInfo: {id: user.id, phone: user.phone}};
+                ctx.session = {userInfo: {id: user.id, phone: user.phone, roleId: user.roleId}};
                 console.log('session:', ctx.session);
             } else {
                 res.code = -1;

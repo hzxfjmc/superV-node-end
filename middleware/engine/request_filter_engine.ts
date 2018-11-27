@@ -30,8 +30,8 @@ export class RequestFilterEngine extends AbstractEngine {
             // } else if (body.params && body.params.userId) {
             //     userAuthInfo.userId = body.params.userId || '';
             // }
-            //
-            // ctx.userAuthInfo = userAuthInfo;
+
+            // ctx.session.userInfo = {id: 1};
             await next();
 
         });
