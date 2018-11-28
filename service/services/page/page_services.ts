@@ -2,7 +2,10 @@ import * as Joi from 'joi';
 import {SvrResponse} from '../../../model/common/svr_context';
 import { PageBusiness } from '../../../business/page_business';
 import * as Enum from '../../../model/enums';
+import MomentHelper from '../../../helper/moment_helper';
+import { Sequelize } from 'sequelize-typescript';
 import {needLogin, permission} from "../../../core/decorators/auth_decorator";
+import Article from "../../../model/article";
 
 export default class PageServices {
 
@@ -91,16 +94,19 @@ export default class PageServices {
             result.display = `参数错误${error}`;
             return result;
         }
-        const article = await this.pageBusiness.checkArticleExist(formData.id);
+        const article: any = await this.pageBusiness.checkArticleExist(formData.id);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             result.code = -1;
             result.display = '该文章不存在';
             return result;
         }
         if (article.status === Enum.ArticleStatus.PUBLIC) {
-            article.readTotal = article.readTotal + 1;
-            article.save();
+            Article.update({readTotal: Sequelize.literal('`read_total` + 1' )}, {
+                where: {id: formData.id}
+            });
         }
+        article.createTime = MomentHelper.formatterDate(article.createTime, 'YYYY-MM-DD');
+        article.updateTime = MomentHelper.formatterDate(article.updateTime, 'YYYY-MM-DD');
         result.content = article;
         return result;
     }

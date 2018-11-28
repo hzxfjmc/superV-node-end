@@ -59,7 +59,12 @@ export class PageBusiness {
     }
 
     public async checkArticleExist(id) {
-        return await Article.findById(id);
+        return await Article.findOne({
+            where: {
+                id
+            },
+            raw: true
+        });
     }
 
     // 一键导入
