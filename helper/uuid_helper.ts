@@ -6,8 +6,7 @@ export default class UuidHelper {
     }
 
     /**
-     * @description 生成给唯一id，做标识。 example: 70(友好文标识)(13位时间戳)(3位随机数)
-     * @author yangwend
+     * @description 生成给唯一id，做标识。 example: 70(\标识)(13位时间戳)(3位随机数)
      * @static
      * @returns
      * @memberof UuidHelper

@@ -9,6 +9,7 @@ import MomentHelper from '../helper/moment_helper';
 import Article from '../model/article';
 import ArticleFolder from '../model/article_folder';
 import UserCollect from '../model/user_collect';
+import * as request from 'request';
 import Paging from "../helper/paging";
 import * as Enum from '../model/enums';
 const rootPath = path.resolve(__dirname, '../../');
@@ -70,28 +71,28 @@ export class PageBusiness {
     // 一键导入
     public async getHtmlByUrl(ctx, formData) {
         const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
-        // const option={
-        //     path: url,
-        //     headers:{
-        //         'Host':'mp.weixin.qq.com',
-        //         'Referer':'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw?'
-        //     }
-        // };
-        https.get(url, (res) => {
-            let html = '';
-            res.on('data', (data) => {
-                html += data;
+        const result = new SvrResponse();
+        return new Promise((resolve, reject) => {
+            https.get(url, (res) => {
+                let html = '';
+                res.on('data', (data) => {
+                    html += data;
+                });
+                res.on('end', async () => {
+                    const config = this.filterArticleDom(html);
+                    config.channelUrl = url;
+                    config.userId = 1;
+                    // const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
+                    const res = await this.createPage(ctx, config);
+                    resolve(res);
+                });
+            }).on('error', function(error) {
+                console.log('获取数据出错！', error);
+                result.code = -1;
+                result.display = '生成文章失败';
+                reject(result);
             });
-            res.on('end', async () => {
-                const config = this.filterArticleDom(html);
-                config.channelUrl = url;
-                config.userId = 1;
-                // const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
-                await this.createPage(ctx, config);
-            });
-        }).on('error', function(error) {
-            console.log('获取数据出错！', error);
-        });
+        })
     }
 
     public async checkUrlIsExist(id, url) {
@@ -107,40 +108,40 @@ export class PageBusiness {
     }
 
     private filterArticleDom(html) {
-        // console.log(html);
         const $ = cheerio.load(html);
-        const endPrx = '&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1';
-        // const richContentEl = $('#page-content');
+        const endPrx = '&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1&retryload=1';
         const pageConfig: any = {};
+        const date = MomentHelper.formatterDate(new Date(), 'YYYY-MM-DD');
+        const origin = pushFileOrigin + `/${date}/`;
+        const urlArr: any = [];
 
-        // 获取文章title
         pageConfig.articleTitle = $('.rich_media_title').text().trim().replace('\t\n', '');
-        console.log(pageConfig.articleTitle);
-        // 处理所有的img的src问题
-        // richContentEl.find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
-        //     console.log(elem.attribs['data-src'], elem.attribs.src);
-        // });
-        // console.log($('.__bg_gif '));
+
+        $('.rich_media_content').find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
+            const fileName = UuidHelper.getOrderId() + '.webp';
+            this.uploadByUrl(elem.attribs['data-src']+endPrx, fileName);
+            elem.attribs.src = origin + fileName;
+            urlArr.push({
+                url: elem.attribs['data-src']+endPrx,
+                fileName
+            });
+        });
         const pArray: any = [{
             type: 'header',
             title: pageConfig.articleTitle,
             color: "#5075c3"
         }];
-        $('.rich_media_content').children('p').each((i, item) => {
-            if (item.children[0].name === 'img') {
-                const parentStyle = item.attribs;
-                const childrenStyle = item.children[0].attribs;
-                pArray.push({
-                    type: 'dom-img',
-                    fileList: [],
-                    html: `<p style="${parentStyle.style}">
-                        <img style="${childrenStyle.style}" src="${childrenStyle['data-src']}${endPrx}"/>
-                    </p>`
-                });
-            }
+        $('.rich_media_content').children().each((i, item) => {
+            item.attribs.id = `children_${i}`;
+            const {name, attribs} = item;
+            const html = `<${name} style=${JSON.stringify(attribs.style)}>${$(`#children_${i}`).html()}</${name}>`;
+            pArray.push({
+                type: 'dom-html',
+                html: html
+            });
         });
+
         pageConfig.articleConfig = JSON.stringify(pArray);
-        console.log('asdasd');
         return pageConfig;
     }
 
@@ -319,8 +320,20 @@ export class PageBusiness {
         return articleList;
     }
 
+    public async uploadByUrl(url, fileName) {
+        // const extMap = {
+        //     'jpeg': 'webp',
+        //     'gif': 'gif',
+        //     'png': 'webp',
+        // };
+        const date = MomentHelper.formatterDate(new Date(), 'YYYY-MM-DD');
+        const dirPath = fileStore + `${sep}${date}${sep}`;
+        await PageBusiness.createFolder(dirPath);
+        // const extname = '.' + extMap[url.match(/wx_fmt=(\w+)&/)[1]];
+        request(url).pipe(fs.createWriteStream(dirPath + fileName));
+    }
 
-    public async upload(ctx, formData) {
+    public async upload(formData) {
         const res = new SvrResponse();
         const { files } = formData;
         const filesArr = [files];
@@ -353,7 +366,6 @@ export class PageBusiness {
      * @param callback
      */
     private static createFolder(dirpath) {
-        console.log(dirpath);
         if(fs.existsSync(dirpath)){
             return true;
         }else{

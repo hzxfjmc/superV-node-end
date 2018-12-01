@@ -15,6 +15,7 @@ export default class PageServices {
         this.pageBusiness = new PageBusiness();
     }
 
+    @needLogin()
     public async createPage(ctx, formData) {
         const schema = Joi.object().keys({
             articleConfig: Joi.string(),
@@ -30,6 +31,7 @@ export default class PageServices {
         return await this.pageBusiness.createPage(ctx, formData);
     }
 
+    @needLogin()
     public async stashPage(ctx, formData) {
         const schema = Joi.object().keys({
             articleTitle: Joi.string().required(),
@@ -55,6 +57,7 @@ export default class PageServices {
         return await this.pageBusiness.stashPage(ctx, formData);
     }
 
+    @needLogin()
     public async pushPage(ctx, formData) {
         const schema = Joi.object().keys({
             articleTitle: Joi.string().required(),
@@ -111,6 +114,7 @@ export default class PageServices {
         return result;
     }
 
+    @needLogin()
     public async createArticleChannel(ctx, formData) {
         const schema = Joi.object().keys({
             folderName: Joi.string().required()
@@ -126,6 +130,7 @@ export default class PageServices {
         return await this.pageBusiness.createArticleChannel(formData);
     }
 
+    @needLogin()
     public async editArticleChannel(ctx, formData) {
         const schema = Joi.object().keys({
             folderName: Joi.string().required(),
@@ -156,6 +161,7 @@ export default class PageServices {
         return res;
     }
 
+    @needLogin()
     public async moveArticleTo(ctx, formData) {
         const schema = Joi.object().keys({
             id: Joi.number().required(),
@@ -191,10 +197,12 @@ export default class PageServices {
         return res;
     }
 
+    @needLogin()
     public async getArticleChannelList(ctx, formData) {
         return await this.pageBusiness.getArticleChannelList(ctx);
     }
 
+    @needLogin()
     public async delArticleChannel(ctx, formData) {
         const schema = Joi.object().keys({
             id: Joi.number().required()
@@ -217,6 +225,7 @@ export default class PageServices {
         return await this.pageBusiness.delArticleChannel(formData);
     }
 
+    @needLogin()
     public async getArticleList(ctx, formData) {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
@@ -244,6 +253,7 @@ export default class PageServices {
         return res;
     }
 
+    @needLogin()
     public async changeCollectStatus(ctx, formData) {
         const schema = Joi.object().keys({
             status: Joi.number().required(),
@@ -283,6 +293,7 @@ export default class PageServices {
         return res;
     }
 
+    @needLogin()
     public async getCollectedArticle(ctx, formData) {
         const res = new SvrResponse();
         formData.userId = ctx.session.userInfo.id;
@@ -319,7 +330,8 @@ export default class PageServices {
         return await this.pageBusiness.getHtmlByUrl(ctx, formData);
     }
 
+    @needLogin()
     public async uploadFile(ctx, formData) {
-        return await this.pageBusiness.upload(ctx, formData);
+        return await this.pageBusiness.upload(formData);
     }
 }
