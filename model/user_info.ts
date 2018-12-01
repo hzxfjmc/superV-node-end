@@ -93,7 +93,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public updateTime: Date;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '用户头像',
@@ -101,7 +101,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public headimgurl: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: 'true',
@@ -109,7 +109,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public name: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '单位名称',
@@ -117,7 +117,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public company: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '部门名称',
@@ -125,7 +125,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public department: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '职位',
@@ -133,7 +133,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public job: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '税号',
@@ -141,7 +141,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public dutyNumber: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: 'qq号码',
@@ -149,7 +149,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public qq: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '名片标题',
@@ -157,7 +157,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public businessCardTitle: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '名片描述',
@@ -165,7 +165,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public businessCarddescribe: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(224),
         comment: '微信二维码',
@@ -173,7 +173,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public wechatImg: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '微信号',
@@ -181,7 +181,7 @@ export default class UserInfo extends Model<UserInfo> {
     })
     public wechatNumber: string;
 
-    @AllowNull(true)
+    @AllowNull(false)
     @Column({
         type: DataType.STRING(20),
         comment: '用户签名',

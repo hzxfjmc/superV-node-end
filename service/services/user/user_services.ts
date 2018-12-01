@@ -1,5 +1,5 @@
 import * as Joi from 'joi';
-import {SvrResponse} from '../../../model/common/svr_context';
+import { SvrResponse } from '../../../model/common/svr_context';
 import { UserBusiness } from "../../../business/user_business";
 import * as Enum from '../../../model/enums';
 
@@ -80,4 +80,34 @@ export default class UserServices {
     public async goodsList(ctx, formData) {
         return this.userBusiness.getGoodsList();
     }
+
+
+
+     // 查询名片
+    /**
+     * @description 
+     * @param ctx
+     * @param formData
+    **/
+     public async getCardInfo(ctx, formData) {
+        const schema = Joi.object().keys({
+            phone: Joi.string().required(),
+            password: Joi.string().required()
+        }).unknown();
+     }
+
+    // 编辑名片
+    /**
+     * @description 
+     * @param ctx
+     * @param formData
+    **/
+   public async UpDateCardInfo(ctx, formData) {
+    const schema = Joi.object().keys({
+        phone: Joi.string().required(),
+        password: Joi.string().required()
+    }).unknown();
+ }
+
+   
 }
