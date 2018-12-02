@@ -90,17 +90,6 @@ export default class UserServices {
     **/
     @needLogin()
     public async getCardInfo(ctx, formData) {
-        const schema = Joi.object().keys({
-            phone: Joi.string().required(),
-            password: Joi.string().required()
-        }).unknown();
-        const result = new SvrResponse();
-        const {error} = Joi.validate(formData, schema);
-        if (error) {
-            result.code = -1;
-            result.display = `参数错误${error}`;
-            return result;
-        }
         formData.userId = ctx.session.userInfo.id;
         return this.userBusiness.getUserInfo;
      }
@@ -114,8 +103,18 @@ export default class UserServices {
    @needLogin()
    public async UpDateCardInfo(ctx, formData) {
     const schema = Joi.object().keys({
-        phone: Joi.string().required(),
-        password: Joi.string().required()
+        headimgurl: Joi.string().required(),
+        name: Joi.string().required(),
+        company: Joi.string().required(),
+        department: Joi.string().required(),
+        job: Joi.string().required(),
+        dutyNumber: Joi.string().required(),
+        qq: Joi.string().required(),
+        businessCardTitle: Joi.string().required(),
+        businessCarddescribe: Joi.string().required(),
+        wechatImg: Joi.string().required(),
+        wechatNumber: Joi.string().required(),
+        sign: Joi.string().required()
     }).unknown();
         const result = new SvrResponse();
         const {error} = Joi.validate(formData, schema);
