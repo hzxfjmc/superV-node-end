@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 import { SvrResponse } from '../../../model/common/svr_context';
 import { UserBusiness } from "../../../business/user_business";
 import * as Enum from '../../../model/enums';
-
+import {needLogin, permission} from "../../../core/decorators/auth_decorator";
 export default class UserServices {
 
     private userBusiness: UserBusiness;
@@ -71,7 +71,6 @@ export default class UserServices {
 
     // 待写
     public async resetPwd(ctx, formData) {}
-
     /**
      * @description 获取购买可选列表
      * @param ctx
@@ -89,11 +88,21 @@ export default class UserServices {
      * @param ctx
      * @param formData
     **/
-     public async getCardInfo(ctx, formData) {
+    @needLogin()
+    public async getCardInfo(ctx, formData) {
         const schema = Joi.object().keys({
             phone: Joi.string().required(),
             password: Joi.string().required()
         }).unknown();
+        const result = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            result.code = -1;
+            result.display = `参数错误${error}`;
+            return result;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        return this.userBusiness.getUserInfo;
      }
 
     // 编辑名片
@@ -102,12 +111,15 @@ export default class UserServices {
      * @param ctx
      * @param formData
     **/
+   @needLogin()
    public async UpDateCardInfo(ctx, formData) {
     const schema = Joi.object().keys({
         phone: Joi.string().required(),
         password: Joi.string().required()
     }).unknown();
- }
-
-   
+        const result = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        formData.userId = ctx.session.userInfo.id;
+        return this.userBusiness.updataUserInfo;
+    }
 }

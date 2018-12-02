@@ -40,13 +40,26 @@ export class UserBusiness {
             res.content = {
                 id: userInfo.id,
                 phone: userInfo.phone,
-                roleId: userInfo.roleId
+                roleId: userInfo.roleId,
+
             };
         } else {
             res.code = -1;
             res.display = '该用户不存在';
         }
         return res;
+    }
+
+    public async updataUserInfo(data) {
+        const res = new SvrResponse();
+        try {
+            await UserInfo.update(data,{
+                where:{id:data.id}
+            });
+        } catch (e) {
+            res.code = -1;
+            res.display = '更新数据失败';
+        }
     }
 
     public async logout(ctx) {
@@ -62,4 +75,5 @@ export class UserBusiness {
         }
         return res;
     }
+
 }
