@@ -41,7 +41,18 @@ export class UserBusiness {
                 id: userInfo.id,
                 phone: userInfo.phone,
                 roleId: userInfo.roleId,
-
+                headimgurl:userInfo.headimgurl,
+                name:userInfo.name,
+                company:userInfo.company,
+                department:userInfo.department,
+                job:userInfo.job,
+                dutyNumber:userInfo.dutyNumber,
+                qq: userInfo.qq,
+                businessCardTitle:userInfo.businessCardTitle,
+                businessCarddescribe:userInfo.businessCarddescribe,
+                wechatImg: userInfo.wechatImg,
+                wechatNumber:userInfo.wechatNumber,
+                sign: userInfo.sign,
             };
         } else {
             res.code = -1;
