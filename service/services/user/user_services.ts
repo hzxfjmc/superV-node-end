@@ -120,6 +120,6 @@ export default class UserServices {
         const res = new SvrResponse();
         const {error} = Joi.validate(formData, schema);
         const { id } = ctx.session.userInfo;
-        return await this.userBusiness.updataUserInfo(ctx, formData);
+        return await this.userBusiness.updataUserInfo(id, formData);
     }
 }

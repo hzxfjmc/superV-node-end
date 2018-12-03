@@ -95,7 +95,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '用户头像',
         field: 'headimgurl'
     })
@@ -103,7 +103,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '姓名',
         field: 'name'
     })
@@ -111,7 +111,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '单位名称',
         field: 'company'
     })
@@ -119,7 +119,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '部门名称',
         field: 'department'
     })
@@ -127,7 +127,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '职位',
         field: 'job'
     })
@@ -135,7 +135,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '税号',
         field: 'dutyNumber'
     })
@@ -151,7 +151,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '名片标题',
         field: 'businessCardTitle'
     })
@@ -159,7 +159,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '名片描述',
         field: 'businessCarddescribe'
     })
@@ -183,7 +183,7 @@ export default class UserInfo extends Model<UserInfo> {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(20),
+        type: DataType.STRING(220),
         comment: '用户签名',
         field: 'sign'
     })

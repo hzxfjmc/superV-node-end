@@ -61,9 +61,8 @@ export class UserBusiness {
         return res;
     }
 
-    public async updataUserInfo(ctx, formData) {
+    public async updataUserInfo(id, formData) {
         const res = new SvrResponse();
-        const {id} = formData;
         try {
             await UserInfo.update(formData,{
                 where:{id:id}
