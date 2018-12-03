@@ -61,16 +61,19 @@ export class UserBusiness {
         return res;
     }
 
-    public async updataUserInfo(data) {
+    public async updataUserInfo(ctx, formData) {
         const res = new SvrResponse();
+        const {id} = formData;
         try {
-            await UserInfo.update(data,{
-                where:{id:data.id}
+            await UserInfo.update(formData,{
+                where:{id:id}
             });
+            res.display = '更新成功';
         } catch (e) {
             res.code = -1;
             res.display = '更新数据失败';
         }
+        return res;
     }
 
     public async logout(ctx) {

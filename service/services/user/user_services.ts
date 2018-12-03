@@ -82,26 +82,27 @@ export default class UserServices {
 
 
 
-     // 查询名片
     /**
+     * 查询名片
      * @description 
      * @param ctx
      * @param formData
     **/
     @needLogin()
     public async getCardInfo(ctx, formData) {
-        formData.userId = ctx.session.userInfo.id;
-        return this.userBusiness.getUserInfo;
+        const {id} = ctx.session.userInfo;
+        return await this.userBusiness.getUserInfo({id});
      }
 
-    // 编辑名片
+   
     /**
+     * 编辑名片
      * @description 
      * @param ctx
      * @param formData
     **/
    @needLogin()
-   public async UpDateCardInfo(ctx, formData) {
+   public async updateCardInfo(ctx, formData) {
     const schema = Joi.object().keys({
         headimgurl: Joi.string().required(),
         name: Joi.string().required(),
@@ -116,9 +117,9 @@ export default class UserServices {
         wechatNumber: Joi.string().required(),
         sign: Joi.string().required()
     }).unknown();
-        const result = new SvrResponse();
+        const res = new SvrResponse();
         const {error} = Joi.validate(formData, schema);
-        formData.userId = ctx.session.userInfo.id;
-        return this.userBusiness.updataUserInfo;
+        const { id } = ctx.session.userInfo;
+        return await this.userBusiness.updataUserInfo(ctx, formData);
     }
 }
