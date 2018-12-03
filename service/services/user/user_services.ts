@@ -111,6 +111,7 @@ export default class UserServices {
         job: Joi.string().required(),
         dutyNumber: Joi.string().required(),
         qq: Joi.string().required(),
+        email: Joi.string().required(),
         businessCardTitle: Joi.string().required(),
         businessCarddescribe: Joi.string().required(),
         wechatImg: Joi.string().required(),

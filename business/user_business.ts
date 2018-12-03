@@ -43,6 +43,7 @@ export class UserBusiness {
                 roleId: userInfo.roleId,
                 headimgurl:userInfo.headimgurl,
                 name:userInfo.name,
+                email:userInfo.email,
                 company:userInfo.company,
                 department:userInfo.department,
                 job:userInfo.job,
@@ -69,6 +70,7 @@ export class UserBusiness {
             });
             res.display = '更新成功';
         } catch (e) {
+            console.log(e);
             res.code = -1;
             res.display = '更新数据失败';
         }
