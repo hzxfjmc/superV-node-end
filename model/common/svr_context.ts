@@ -37,7 +37,6 @@ export class SvrOption {
 
 }
 export class SvrResponse {
-
     constructor(code = 0, msg = '', display = '', content = null, status = 200) {
         this.code = code || 0;
         this.message = msg || '';

@@ -41,7 +41,19 @@ export class UserBusiness {
                 id: userInfo.id,
                 phone: userInfo.phone,
                 roleId: userInfo.roleId,
-
+                headimgurl:userInfo.headimgurl,
+                name:userInfo.name,
+                email:userInfo.email,
+                company:userInfo.company,
+                department:userInfo.department,
+                job:userInfo.job,
+                dutyNumber:userInfo.dutyNumber,
+                qq: userInfo.qq,
+                businessCardTitle:userInfo.businessCardTitle,
+                businessCarddescribe:userInfo.businessCarddescribe,
+                wechatImg: userInfo.wechatImg,
+                wechatNumber:userInfo.wechatNumber,
+                sign: userInfo.sign,
             };
         } else {
             res.code = -1;
@@ -50,16 +62,19 @@ export class UserBusiness {
         return res;
     }
 
-    public async updataUserInfo(data) {
+    public async updataUserInfo(id, formData) {
         const res = new SvrResponse();
         try {
-            await UserInfo.update(data,{
-                where:{id:data.id}
+            await UserInfo.update(formData,{
+                where:{id:id}
             });
+            res.display = '更新成功';
         } catch (e) {
+            console.log(e);
             res.code = -1;
             res.display = '更新数据失败';
         }
+        return res;
     }
 
     public async logout(ctx) {
