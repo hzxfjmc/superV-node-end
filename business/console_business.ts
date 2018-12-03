@@ -212,15 +212,18 @@ export class ConsoleBusiness {
 
     public async articleList(ctx, formData) {
         const res = new SvrResponse();
-        const {pageSize = 10, pageNo = 1, userId} = formData;
+        const {pageSize = 10, pageNo = 1, status, userId} = formData;
         const limit = Number(pageSize);
         const offset = (Number(pageNo) - 1) * limit;
+        const filter = {
+            status: status ? status : {
+                [Op.not]: Enum.ArticleStatus.DEL
+            }
+        };
         const article = await Article.findAndCountAll({
             where: {
                 userId,
-                status: {
-                    [Op.not]: Enum.ArticleStatus.DEL
-                }
+                ...filter
             },
             limit,
             offset,

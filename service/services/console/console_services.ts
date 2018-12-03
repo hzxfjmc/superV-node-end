@@ -337,7 +337,8 @@ export default class ConsoleServices {
         const res = new SvrResponse();
         const schema = Joi.object().keys({
             pageSize: Joi.number().required(),
-            pageNo: Joi.number().required()
+            pageNo: Joi.number().required(),
+            status: Joi.number()
         }).unknown();
         const {error} = Joi.validate(formData, schema);
         if (error) {

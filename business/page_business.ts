@@ -70,7 +70,7 @@ export class PageBusiness {
 
     // 一键导入
     public async getHtmlByUrl(ctx, formData) {
-        const url = formData.url || 'https://mp.weixin.qq.com/s/vjiFB8Xvj94CMKhQ9ENypw';
+        const url = formData.url;
         const result = new SvrResponse();
         return new Promise((resolve, reject) => {
             https.get(url, (res) => {
@@ -121,6 +121,7 @@ export class PageBusiness {
             const fileName = UuidHelper.getOrderId() + '.webp';
             this.uploadByUrl(elem.attribs['data-src']+endPrx, fileName);
             elem.attribs.src = origin + fileName;
+            elem.attribs.id = `MyWinXin_${UuidHelper.gen()}`;
             urlArr.push({
                 url: elem.attribs['data-src']+endPrx,
                 fileName
@@ -129,7 +130,8 @@ export class PageBusiness {
         const pArray: any = [{
             type: 'header',
             title: pageConfig.articleTitle,
-            color: "#5075c3"
+            color: "#5075c3",
+            fileList: []
         }];
         $('.rich_media_content').children().each((i, item) => {
             item.attribs.id = `children_${i}`;

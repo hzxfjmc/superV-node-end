@@ -104,8 +104,8 @@ export default class UserInfo extends Model<UserInfo> {
     @AllowNull(true)
     @Column({
         type: DataType.STRING(20),
-        comment: 'true',
-        field: '姓名'
+        comment: '姓名',
+        field: 'name'
     })
     public name: string;
 
