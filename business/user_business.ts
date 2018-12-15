@@ -54,6 +54,7 @@ export class UserBusiness {
                 wechatImg: userInfo.wechatImg,
                 wechatNumber:userInfo.wechatNumber,
                 sign: userInfo.sign,
+                identityInfo: userInfo.identityInfo,
             };
         } else {
             res.code = -1;

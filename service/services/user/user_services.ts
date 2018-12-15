@@ -116,7 +116,8 @@ export default class UserServices {
         businessCarddescribe: Joi.string().required(),
         wechatImg: Joi.string().required(),
         wechatNumber: Joi.string().required(),
-        sign: Joi.string().required()
+        sign: Joi.string().required(),
+        identityInfo: Joi.string().required(),
     }).unknown();
         const res = new SvrResponse();
         const {error} = Joi.validate(formData, schema);

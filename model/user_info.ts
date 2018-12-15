@@ -188,4 +188,12 @@ export default class UserInfo extends Model<UserInfo> {
         field: 'sign'
     })
     public sign: string;
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.STRING(220),
+        comment: '用户身份',
+        field: 'identityInfo'
+    })
+    public identityInfo: string;
 }
