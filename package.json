@@ -5,7 +5,7 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "nodemon ./bin/index.js",
     "dev": "cross-env NODE_ENV=development && npm run build && npm run start",
-    "prod": "cross-env NODE_ENV=production && npm run start"
+    "prod": "cross-env NODE_ENV=production && npm run build && npm run start"
   },
   "devDependencies": {
     "@types/koa": "^2.0.46",

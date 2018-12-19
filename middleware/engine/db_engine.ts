@@ -27,10 +27,11 @@ export class DbEngine extends AbstractEngine {
             ...app.config.dbConfig
         };
 
-        if (app.config.env === 'production') {
-            const pwd = config.password;
-            config.password = AESHelper.decrypt(pwd, app.config.dbConfig.encryptKey);
-        }
+        // if (app.config.env === 'production') {
+        //     const pwd = config.password;
+        //     // config.password = AESHelper.decrypt(pwd, app.config.dbConfig.encryptKey);
+        // }
+        console.log(config);
         const sequelize: any = new Sequelize(config);
         this.sequelize = sequelize;
         sequelize
@@ -47,10 +48,10 @@ export class DbEngine extends AbstractEngine {
     }
 
     public async init () {
-        // await this.sequelize.sync({force: false});
+        await this.sequelize.sync({force: false});
 
         // 初始化管理员
-        // await UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
-        // await Role.create({roleName: '管理员', authorize: 'all', status: 1});
+        await UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
+        await Role.create({roleName: '管理员', authorize: 'all', status: 1});
     }
 };
