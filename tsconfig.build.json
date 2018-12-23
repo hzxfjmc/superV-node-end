@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strictNullChecks": false,
-    "watch": false
+    "watch": true
   },
   "include": [
     "**/*.ts",

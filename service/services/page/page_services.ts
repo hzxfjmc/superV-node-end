@@ -6,13 +6,16 @@ import MomentHelper from '../../../helper/moment_helper';
 import { Sequelize } from 'sequelize-typescript';
 import {needLogin, permission} from "../../../core/decorators/auth_decorator";
 import Article from "../../../model/article";
-
+import { UserBusiness } from '../../../business/user_business';
+const AuthRoles = ['1', '2'];
 export default class PageServices {
 
     private pageBusiness: PageBusiness;
+    private userBusiness: UserBusiness;
 
     constructor() {
         this.pageBusiness = new PageBusiness();
+        this.userBusiness = new UserBusiness();
     }
 
     @needLogin()
@@ -29,6 +32,22 @@ export default class PageServices {
         }
         formData.userId = ctx.session.userInfo.id;
         return await this.pageBusiness.createPage(ctx, formData);
+    }
+
+    @needLogin()
+    public async copyPage(ctx, formData) {
+        const schema = Joi.object().keys({
+            articleId: Joi.number().required()
+        }).unknown();
+        const result = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            result.code = -1;
+            result.display = '参数错误';
+            return result;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        return this.pageBusiness.copyPage(ctx, formData);
     }
 
     @needLogin()
@@ -275,7 +294,7 @@ export default class PageServices {
         }
         formData.userId = ctx.session.userInfo.id;
         const collect = await this.pageBusiness.userIsCollected(formData.userId, articleId, status);
-        if (!collect && status === Enum.ArticleCollected.COLLECTED) {
+        if (!collect || status === Enum.ArticleCollected.COLLECTED) {
             return await this.pageBusiness.createCollected(formData);
         } else if (collect && status === Enum.ArticleCollected.UNCOLLECTED) {
             try {
@@ -302,6 +321,27 @@ export default class PageServices {
         const articleIds = collectedList.map(item => item.articleId);
 
         res.content = await this.pageBusiness.getArticleListByIds(articleIds);
+        return res;
+    }
+
+    @needLogin()
+    public async getArticleCollectedStatus(ctx, formData) {
+        const schema = Joi.object().keys({
+            articleId: Joi.number().required()
+        }).unknown();
+        const res = new SvrResponse();
+        const { error } = Joi.validate(formData, schema);
+        if (error) {
+            res.code = -1;
+            res.display = '参数错误';
+            return res;
+        }
+        formData.userId = ctx.session.userInfo.id;
+        const userInfo: any  = await this.userBusiness.getCardInfo({id: formData.userId});
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        res.content = await this.pageBusiness.userIsCollected(formData.userId, formData.articleId);
+        res.content['isAuth'] = AuthRoles.indexOf(userInfo.roleId) === -1;
+        res.content['isBelong'] = article && article.userId === formData.userId;
         return res;
     }
 

@@ -14,6 +14,6 @@ export default class UuidHelper {
     public static getOrderId() {
         const timestamp = new Date().getTime().toString();
         const random = (Math.random() * 1000).toString().substr(0, 3);
-        return Number(`70${timestamp}${random}`);
+        return `70${timestamp}${random}`;
     }
 }

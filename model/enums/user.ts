@@ -1,4 +1,5 @@
 export enum UserRole {
     'ADMIN' = 1,
-    'TOURIST' = 2,
+    'NORMAL' = 2,
+    'TOURIST' = 3,
 }

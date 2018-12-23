@@ -30,7 +30,6 @@ class App {
 
     private async initConfig() {
         let customConfig = {};
-        console.log(process.env.NODE_ENV);
         if (process.env.NODE_ENV === 'production') {
             customConfig = ConfigProd;
         } else {

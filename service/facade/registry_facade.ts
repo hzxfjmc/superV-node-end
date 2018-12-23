@@ -27,7 +27,7 @@ export class RegistryFacade {
         if (res) {
 
             if (ctx.app.config.env !== 'production') {
-                ctx.app.logger.info(`请求地址: ${ctx.request.href} 输入参数： ${JSON.stringify(sys)} 输出报文：${JSON.stringify(res)}`);
+                // ctx.app.logger.info(`请求地址: ${ctx.request.href} 输入参数： ${JSON.stringify(sys)} 输出报文：${JSON.stringify(res)}`);
             }
 
             ctx.status = 'number' === typeof res.status ? res.status : 200;

@@ -31,14 +31,13 @@ export class DbEngine extends AbstractEngine {
         //     const pwd = config.password;
         //     // config.password = AESHelper.decrypt(pwd, app.config.dbConfig.encryptKey);
         // }
-        console.log(config);
         const sequelize: any = new Sequelize(config);
         this.sequelize = sequelize;
         sequelize
             .authenticate()
             .then(async () => {
                 app.logger.info('Connection has been established successfully.');
-                await this.init();
+                // await this.init();
             })
             .catch(err => {
                 app.logger.error('Unable to connect to the database:' + err);
@@ -53,5 +52,7 @@ export class DbEngine extends AbstractEngine {
         // 初始化管理员
         await UserInfo.create({phone: '15279169177', password: 'admin111', authEndTime: '2018-11-19', status: 1, roleId: 1});
         await Role.create({roleName: '管理员', authorize: 'all', status: 1});
+        await Role.create({roleName: '用户', authorize: 'front', status: 1});
+        await Role.create({roleName: '游客', authorize: 'none', status: 1});
     }
 };

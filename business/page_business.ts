@@ -13,8 +13,9 @@ import * as request from 'request';
 import Paging from "../helper/paging";
 import * as Enum from '../model/enums';
 const rootPath = path.resolve(__dirname, '../../');
+
 const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\file\\fileStore' : '/file/fileStore';
-const pushFileOrigin = process.env.NODE_ENN === 'development' ? 'http://localhost:6060/fileStore' : 'http://47.110.155.99:6060/fileStore';
+const pushFileOrigin = process.env.NODE_ENV === 'development' ? 'http://localhost:6060/fileStore' : 'http://47.110.155.99:6060/fileStore';
 const sep = path.sep;
 
 export class PageBusiness {
@@ -31,6 +32,15 @@ export class PageBusiness {
             res.display = `创建文章失败${e}`;
         }
         return res;
+    }
+
+    public async copyPage(ctx, formData) {
+        const {articleId, userId} = formData;
+        const article = await this.checkArticleExist(articleId);
+        return await this.createPage(ctx,{
+            userId,
+            articleConfig: article.articleConfig
+        })
     }
 
     public async stashPage(ctx, formData) {
@@ -118,7 +128,9 @@ export class PageBusiness {
         pageConfig.articleTitle = $('.rich_media_title').text().trim().replace('\t\n', '');
 
         $('.rich_media_content').find('img').filter((i, elem) => elem.attribs['data-src']).each((i, elem) => {
-            const fileName = UuidHelper.getOrderId() + '.webp';
+            const orderId = UuidHelper.getOrderId();
+            const fileName = orderId + i + '.webp';
+            console.log(fileName, orderId, i)
             this.uploadByUrl(elem.attribs['data-src']+endPrx, fileName);
             elem.attribs.src = origin + fileName;
             elem.attribs.id = `MyWinXin_${UuidHelper.gen()}`;
@@ -237,12 +249,13 @@ export class PageBusiness {
         });
     }
 
-    public async userIsCollected(userId, articleId, status) {
+    public async userIsCollected(userId, articleId, status?) {
         return await UserCollect.findOne({
             where: {
                 userId,
                 articleId
-            }
+            },
+            raw: true
         })
     }
 
