@@ -37,7 +37,7 @@ export class DbEngine extends AbstractEngine {
             .authenticate()
             .then(async () => {
                 app.logger.info('Connection has been established successfully.');
-                await this.init();
+                // await this.init();
             })
             .catch(err => {
                 app.logger.error('Unable to connect to the database:' + err);
