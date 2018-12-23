@@ -339,7 +339,7 @@ export default class PageServices {
         formData.userId = ctx.session.userInfo.id;
         const userInfo: any  = await this.userBusiness.getCardInfo({id: formData.userId});
         const article = await this.pageBusiness.checkArticleExist(formData.articleId);
-        res.content = await this.pageBusiness.userIsCollected(formData.userId, formData.articleId);
+        res.content = await this.pageBusiness.userIsCollected(formData.userId, formData.articleId) || {};
         res.content['isAuth'] = AuthRoles.indexOf(userInfo.roleId) === -1;
         res.content['isBelong'] = article && article.userId === formData.userId;
         return res;
