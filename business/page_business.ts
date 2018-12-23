@@ -218,7 +218,14 @@ export class PageBusiness {
     }
 
     public async createArticleChannel(formData) {
-        return await ArticleFolder.create(formData);
+        const res = new SvrResponse();
+        try {
+            await ArticleFolder.create(formData);
+        } catch(e) {
+            res.code = -1;
+            res.display = '创建失败';
+        }
+        return res;
     }
 
     public async checkArticleChannel(id, userId) {
