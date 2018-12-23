@@ -296,11 +296,13 @@ export class PageBusiness {
     }
 
     public async getArticleChannelList(ctx) {
-        return await ArticleFolder.findAll({
+        const res = new SvrResponse();
+        res.content = await ArticleFolder.findAll({
             where: {
                 userId: ctx.session.userInfo.id
             }
-        })
+        });
+        return res;
     }
 
     public async getArticleList(formData) {
