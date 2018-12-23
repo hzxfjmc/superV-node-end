@@ -69,7 +69,7 @@ export class ConsoleBusiness {
     public async delRole(formData) {
         const res = new SvrResponse();
         try {
-            const role = await Role.findById(formData.id);
+            const role = await Role.findByPk(formData.id);
             if (role.status !== Enum.RoleStatus.DEL) {
                 role.status = Enum.RoleStatus.DEL;
                 await role.save();

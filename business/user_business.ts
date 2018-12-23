@@ -34,7 +34,7 @@ export class UserBusiness {
 
     public async getUserInfo(data) {
         const res = new SvrResponse();
-        const userInfo = await UserInfo.findById(data.id);
+        const userInfo = await UserInfo.findByPk(data.id);
         if (userInfo) {
             delete userInfo.password;
             res.content = {
@@ -51,7 +51,7 @@ export class UserBusiness {
 
     public async getCardInfo(data) {
         const res = new SvrResponse();
-        const userInfo = await UserInfo.findById(data.id);
+        const userInfo = await UserInfo.findByPk(data.id);
         if (userInfo) {
             delete userInfo.password;
             res.content = {
