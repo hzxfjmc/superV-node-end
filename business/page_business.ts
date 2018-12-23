@@ -14,7 +14,7 @@ import Paging from "../helper/paging";
 import * as Enum from '../model/enums';
 const rootPath = path.resolve(__dirname, '../../');
 const fileStore = process.env.NODE_ENV === 'development' ? 'D:\\file\\fileStore' : '/file/fileStore';
-const pushFileOrigin = process.env.NODE_ENN === 'development' ? 'http://localhost:6060/fileStore' : 'http://localhost:6060/fileStore';
+const pushFileOrigin = process.env.NODE_ENN === 'development' ? 'http://localhost:6060/fileStore' : 'http://47.110.155.99:6060/fileStore';
 const sep = path.sep;
 
 export class PageBusiness {

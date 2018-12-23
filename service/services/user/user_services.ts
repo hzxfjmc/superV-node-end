@@ -91,7 +91,7 @@ export default class UserServices {
     @needLogin()
     public async getCardInfo(ctx, formData) {
         const {id} = ctx.session.userInfo;
-        return await this.userBusiness.getUserInfo({id});
+        return await this.userBusiness.getCardInfo({id});
      }
 
    

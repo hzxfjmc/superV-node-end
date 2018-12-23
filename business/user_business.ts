@@ -41,6 +41,23 @@ export class UserBusiness {
                 id: userInfo.id,
                 phone: userInfo.phone,
                 roleId: userInfo.roleId,
+            };
+        } else {
+            res.code = -1;
+            res.display = '该用户不存在';
+        }
+        return res;
+    }
+
+    public async getCardInfo(data) {
+        const res = new SvrResponse();
+        const userInfo = await UserInfo.findById(data.id);
+        if (userInfo) {
+            delete userInfo.password;
+            res.content = {
+                id: userInfo.id,
+                phone: userInfo.phone,
+                roleId: userInfo.roleId,
                 headimgurl:userInfo.headimgurl,
                 name:userInfo.name,
                 email:userInfo.email,
