@@ -6,6 +6,7 @@ import MomentHelper from '../../../helper/moment_helper';
 import { Sequelize } from 'sequelize-typescript';
 import {needLogin, permission} from "../../../core/decorators/auth_decorator";
 import Article from "../../../model/article";
+import UserCollect from '../../../model/user_collect';
 import { UserBusiness } from '../../../business/user_business';
 const AuthRoles = ['1', '2'];
 export default class PageServices {
@@ -294,16 +295,20 @@ export default class PageServices {
         }
         formData.userId = ctx.session.userInfo.id;
         const collect = await this.pageBusiness.userIsCollected(formData.userId, articleId, status);
-        if (!collect || status === Enum.ArticleCollected.COLLECTED) {
+        if (!collect) {
             return await this.pageBusiness.createCollected(formData);
-        } else if (collect && status === Enum.ArticleCollected.UNCOLLECTED) {
+        } else if (collect) {
+            const text = status ? '收藏' : '取消收藏';
             try {
                 collect.status = status;
-                await collect.save();
-                res.display = '取消收藏成功';
+                await UserCollect.update({status}, {where: {
+                        articleId: formData.articleId,
+                        userId: formData.userId
+                    }});
+                res.display = `${text}成功`;
             } catch(e) {
                 res.code = -1;
-                res.display = '取消收藏失败';
+                res.display = `${text}失败${e}`;
             }
         } else {
             res.code = -1;
