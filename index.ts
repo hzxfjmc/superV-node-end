@@ -1,6 +1,7 @@
 import * as winston from 'winston';
 import { Config } from './config/config';
 import { ConfigDefault } from './config/config.default';
+import { ConfigProd } from './config/config.prod';
 import { ConfigDevelopment } from './config/config.dev';
 import { Core } from './core/core';
 import MomentFormat from './helper/moment_helper';
@@ -29,8 +30,9 @@ class App {
 
     private async initConfig() {
         let customConfig = {};
+        console.log(process.env.NODE_ENV);
         if (process.env.NODE_ENV === 'production') {
-
+            customConfig = ConfigProd;
         } else {
             customConfig = ConfigDevelopment;
         }

@@ -1,5 +1,4 @@
 // 开发环境配置
-process.env.NODE_ENV = 'development';
 export const ConfigDevelopment = {
     PORT: 3800,
     REDIS_CLIENT_ADDR: '45.32.179.23',

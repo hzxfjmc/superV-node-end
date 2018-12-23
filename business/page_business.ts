@@ -122,6 +122,7 @@ export class PageBusiness {
             this.uploadByUrl(elem.attribs['data-src']+endPrx, fileName);
             elem.attribs.src = origin + fileName;
             elem.attribs.id = `MyWinXin_${UuidHelper.gen()}`;
+
             urlArr.push({
                 url: elem.attribs['data-src']+endPrx,
                 fileName
@@ -340,7 +341,7 @@ export class PageBusiness {
     public async upload(formData) {
         const res = new SvrResponse();
         const { files } = formData;
-        const filesArr = [files];
+        const filesArr = files.length > 1 ? files : [files];
         const date = MomentHelper.formatterDate(new Date(), 'YYYY-MM-DD');
         const dirPath = fileStore + `${sep}${date}${sep}`;
         const origin = pushFileOrigin + `/${date}/`;
@@ -349,10 +350,15 @@ export class PageBusiness {
         try {
             for (let file of filesArr) {
                 const reader = fs.createReadStream(file.path);
-                let filePath = dirPath + file.name;
+                const filename = new Date().getTime() + file.type.replace('image/', '.');
+                let filePath = dirPath + filename;
                 const upStream = fs.createWriteStream(filePath);
                 reader.pipe(upStream);
-                filePathArr.push(origin + file.name);
+                if (filesArr.length > 1) {
+                    filePathArr.push({url: origin + filename, name: file.name});
+                } else {
+                    filePathArr.push(origin + filename);
+                }
             }
 
             res.display = '上传成功';
