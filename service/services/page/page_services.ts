@@ -48,7 +48,42 @@ export default class PageServices {
             return result;
         }
         formData.userId = ctx.session.userInfo.id;
-        return this.pageBusiness.copyPage(ctx, formData);
+        return await this.pageBusiness.copyPage(ctx, formData);
+    }
+
+    @needLogin()
+    public async delPage(ctx, formData) {
+        const schema = Joi.object().keys({
+            articleId: Joi.number().required()
+        }).unknown();
+        const result = new SvrResponse();
+        const {error} = Joi.validate(formData, schema);
+        if (error) {
+            result.code = -1;
+            result.display = '参数错误';
+            return result;
+        }
+        formData.userId = ctx.session.userInfo.id;
+
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId, formData.userId);
+        if (!article || article.status === Enum.ArticleStatus.DEL) {
+            result.code = -1;
+            result.display = '该文章不存在';
+            return result;
+        }
+
+        article.status = Enum.ArticleStatus.DEL;
+        try {
+            await Article.update({status: Enum.ArticleStatus.DEL}, {where: {
+                    id: formData.articleId,
+                    userId: formData.userId
+                }});
+            result.display = '删除成功';
+        } catch (e) {
+            result.code = -1;
+            result.display = '删除失败';
+        }
+        return result;
     }
 
     @needLogin()
@@ -67,7 +102,7 @@ export default class PageServices {
             return result;
         }
         formData.userId = ctx.session.userInfo.id;
-        const article = await this.pageBusiness.checkArticleExist(formData.id);
+        const article = await this.pageBusiness.checkArticleExist(formData.id, formData.userId);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             result.code = -1;
             result.display = '该文章不存在';
@@ -97,7 +132,7 @@ export default class PageServices {
             return res;
         }
         formData.userId = ctx.session.userInfo.id;
-        const article = await this.pageBusiness.checkArticleExist(formData.id);
+        const article = await this.pageBusiness.checkArticleExist(formData.id, formData.userId);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             res.code = -1;
             res.display = '该文章不存在';
@@ -117,7 +152,7 @@ export default class PageServices {
             result.display = `参数错误${error}`;
             return result;
         }
-        const article: any = await this.pageBusiness.checkArticleExist(formData.id);
+        const article: any = await this.pageBusiness.checkArticleExist(formData.id, formData.userId);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             result.code = -1;
             result.display = '该文章不存在';
@@ -200,7 +235,8 @@ export default class PageServices {
             res.display = '该文件不存在';
             return res;
         }
-        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        const userId = ctx.session.userInfo.id;
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId, userId);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             res.code = -1;
             res.display = '该文章不存在';
@@ -287,7 +323,8 @@ export default class PageServices {
             res.display = '参数错误';
             return res;
         }
-        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        const userId = ctx.session.userInfo.id;
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId, userId);
         if (!article || article.status === Enum.ArticleStatus.DEL) {
             res.code = -1;
             res.display = '该文章不存在';
@@ -343,14 +380,14 @@ export default class PageServices {
         }
         formData.userId = ctx.session.userInfo.id;
         const userInfo: any  = await this.userBusiness.getCardInfo({id: formData.userId});
-        const article = await this.pageBusiness.checkArticleExist(formData.articleId);
+        const article = await this.pageBusiness.checkArticleExist(formData.articleId, formData.userId);
         res.content = await this.pageBusiness.userIsCollected(formData.userId, formData.articleId) || {};
         res.content['isAuth'] = AuthRoles.indexOf(userInfo.roleId) === -1;
         res.content['isBelong'] = article && article.userId === formData.userId;
         return res;
     }
 
-    // @needLogin()
+    @needLogin()
     public async getHtmlByUrl(ctx, formData) {
         const schema = Joi.object().keys({
             url: Joi.string()
@@ -362,15 +399,15 @@ export default class PageServices {
             result.display = '参数错误';
             return result;
         }
-        // const {url} = formData;
-        // const {id} = ctx.session.userInfo;
-        // const article = await this.pageBusiness.checkUrlIsExist(id, url);
-        //
-        // if (article) {
-        //     res.code = -1;
-        //     res.display = '已经导入过此篇文章';
-        //     return res;
-        // }
+        const {url} = formData;
+        const {id} = ctx.session.userInfo;
+        const article = await this.pageBusiness.checkUrlIsExist(id, url);
+
+        if (article) {
+            result.code = -1;
+            result.display = '已经导入过此篇文章';
+            return result;
+        }
 
         return await this.pageBusiness.getHtmlByUrl(ctx, formData);
     }

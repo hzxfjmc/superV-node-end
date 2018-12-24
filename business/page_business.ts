@@ -69,11 +69,15 @@ export class PageBusiness {
         return res;
     }
 
-    public async checkArticleExist(id) {
+    public async checkArticleExist(id, userId?) {
+        const filter: any = {
+            id
+        };
+        if (userId) {
+            filter.userId = userId;
+        }
         return await Article.findOne({
-            where: {
-                id
-            },
+            where: filter,
             raw: true
         });
     }
@@ -320,7 +324,7 @@ export class PageBusiness {
         const res = new SvrResponse();
         res.content = await ArticleFolder.findAll({
             where: {
-                userId: ctx.session.userInfo.id
+                userId: ctx.session.userInfo.id,
             }
         });
         return res;
@@ -331,7 +335,10 @@ export class PageBusiness {
         const articleList: any = await Article.findAll({
             where: {
                 userId,
-                articleTypeId: folderId
+                articleTypeId: folderId,
+                status: {
+                   [Op.not]: Enum.ArticleStatus.DEL
+                }
             },
             attributes: ['id', 'articleTitle', 'articleDesc',
                 'articleTypeId', 'status', 'createTime', 'updateTime'

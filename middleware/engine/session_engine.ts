@@ -94,10 +94,10 @@ export class SessionEngine extends AbstractEngine {
                     await app.redisClient.set(sid, jsonString);
                     app.redisClient.ttl(sid);
                     // 设置redis值过期时间为30分钟
-                    app.redisClient.expire(sid, 3600);
+                    app.redisClient.expire(sid, 86400);
                 } else {
                     // session 续期
-                    app.redisClient.expire(sid, 3600);
+                    app.redisClient.expire(sid, 86400);
                 }
             }
         });
