@@ -408,7 +408,7 @@ export default class PageServices {
             result.display = '已经导入过此篇文章';
             return result;
         }
-
+        formData.userId = id;
         return await this.pageBusiness.getHtmlByUrl(ctx, formData);
     }
 

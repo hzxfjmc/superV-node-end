@@ -84,7 +84,7 @@ export class PageBusiness {
 
     // 一键导入
     public async getHtmlByUrl(ctx, formData) {
-        const url = formData.url;
+        const { url, userId } = formData;
         const result = new SvrResponse();
         return new Promise((resolve, reject) => {
             https.get(url, (res) => {
@@ -95,7 +95,7 @@ export class PageBusiness {
                 res.on('end', async () => {
                     const config = this.filterArticleDom(html);
                     config.channelUrl = url;
-                    config.userId = 1;
+                    config.userId = userId;
                     // const res = await this.renderStringToFile(ctx, {richContent}, 'stash', {});
                     const res = await this.createPage(ctx, config);
                     resolve(res);
